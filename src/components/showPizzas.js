@@ -20,9 +20,15 @@ const ShowPizzas = () => {
     },[]);
 
     const getPizzas = async () => {
-        const respuesta = await axios.get(url);
-        setPizzas(respuesta.data);
-    }
+      try {
+          const response = await axios.get(url);
+          setPizzas(response.data);
+      } catch (error) {
+          console.error("Error fetching pizzas:", error);
+          // Handle the error appropriately
+      }
+  }
+  
 
   return (
     <div className = 'APp'>
