@@ -25,7 +25,6 @@ const ShowPizzas = () => {
           setPizzas(response.data);
       } catch (error) {
           console.error("Error fetching pizzas:", error);
-          // Handle the error appropriately
       }
   }
   
@@ -40,6 +39,36 @@ const ShowPizzas = () => {
                             <i className='fa-solid fa-circle-plus'></i> Añadir
                         </button>
                     </div> 
+                </div>
+            </div>
+            <div className='row mt-3'>
+                <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
+                    <div className='table-responsive'>
+                        <table className='table table-bordered'>
+                            <thead>
+                                <tr><th>#</th><th>PIZZAS</th><th>ORIGIN</th><th>STATE</th><th></th></tr>
+                            </thead>
+                            <tbody className='table-group-divider'>
+                                {pizzas.map((pizzas,i)=>(
+                                    <tr key={pizzas.id}>
+                                        <td>{(i+1)}</td>
+                                        <td>{pizzas.name}</td>
+                                        <td>{pizzas.origin}</td>
+                                        <td>{pizzas.state}</td>
+                                        <td>
+                                            <button className='btn btn-warning'>
+                                                <i className='fa-solid fa-edit'></i>
+                                            </button>
+                                            &nbsp;
+                                            <button className='btn btn-danger'>
+                                                <i className='fa-solid fa-trash'></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
