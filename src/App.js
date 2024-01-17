@@ -6,8 +6,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element = {<showPizzas></showPizzas>}></Route>
-      </Routes>
-    
+      </Routes>  
     </BrowserRouter>
   )
 }

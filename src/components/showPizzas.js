@@ -5,28 +5,43 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { showAlert } from '../functions';
 
-const showPizzas = () => {
+const ShowPizzas = () => {
     const url ='http://api-pizzas.run';
-    const [pizzas ,setPizzas]= useState ([]);
+    const [pizzas , setPizzas]= useState ([]);
     const [id,sedId]=useState('');
     const [name,setName]=useState ('');
     const [origin, setOrigin]=useState('');
     const [state, setState]= useState('');
     const [operation, setOperation]= useState(1);
-    const [title, setTitle]=useState('');
+    const [title, setTitle]= useState('');
 
     useEffect ( ()=>{
         getPizzas();
     },[]);
 
-    const getPizzas = async ()=>{
+    const getPizzas = async () => {
         const respuesta = await axios.get(url);
         setPizzas(respuesta.data);
     }
 
   return (
-    <div>showPizzas</div>
+    <div className = 'APp'>
+        <div className='container-fluid'>
+             <div className='row mt-3'>
+                <div className='col-md-4 offset-md-4'>
+                    <div className='d-grid mx-auto'>
+                        <button className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalproducts'>
+                            <i className='fa-solid fa-circle-plus'></i> Añadir
+                        </button>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <div className='modal fade'>   
+                
+        </div>       
+    </div>
   )
 }
 
-export default showPizzas
+export default ShowPizzas
