@@ -6,12 +6,12 @@ import withReactContent from 'sweetalert2-react-content';
 import { showAlert } from '../functions';
 
 const ShowPizzas = () => {
-    const url ='http://api-pizzas.run';
+    const url ='http://localhost:3000/pizzas';
     const [pizzas , setPizzas]= useState ([]);
-    const [id,sedId]=useState('');
-    const [name,setName]=useState ('');
-    const [origin, setOrigin]=useState('');
-    const [state, setState]= useState('');
+    const [piz_id,sedId]=useState('');
+    const [piz_name,setName]=useState ('');
+    const [piz_origin, setOrigin]=useState('');
+    const [piz_state, setState]= useState('');
     const [operation, setOperation]= useState(1);
     const [title, setTitle]= useState('');
 
@@ -20,15 +20,17 @@ const ShowPizzas = () => {
     },[]);
 
     const getPizzas = async () => {
-      try {
-          const response = await axios.get(url);
-          setPizzas(response.data);
-      } catch (error) {
-          console.error("Error fetching pizzas:", error);
-      }
+        try {
+            const response = await axios.get(url);
+            console.log(response.data); // Check what the API is returning
+            setPizzas(response.data);
+        } catch (error) {
+            console.error("Error fetching pizzas:", error);
+        }
+        
   }
   
-
+  console.log(Array.isArray(pizzas));
   return (
     <div className = 'APp'>
         <div className='container-fluid'>
@@ -50,11 +52,11 @@ const ShowPizzas = () => {
                             </thead>
                             <tbody className='table-group-divider'>
                                 {pizzas.map((pizzas,i)=>(
-                                    <tr key={pizzas.id}>
+                                    <tr key={pizzas.piz_id}>
                                         <td>{(i+1)}</td>
-                                        <td>{pizzas.name}</td>
-                                        <td>{pizzas.origin}</td>
-                                        <td>{pizzas.state}</td>
+                                        <td>{pizzas.piz_name}</td>
+                                        <td>{pizzas.piz_origin}</td>
+                                        <td>{pizzas.piz_state}</td>
                                         <td>
                                             <button className='btn btn-warning'>
                                                 <i className='fa-solid fa-edit'></i>
