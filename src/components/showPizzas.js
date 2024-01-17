@@ -22,7 +22,7 @@ const ShowPizzas = () => {
     const getPizzas = async () => {
         try {
             const response = await axios.get(url);
-            console.log(response.data); // Check what the API is returning
+            //console.log(response.data); // Check what the API is returning
             setPizzas(response.data);
         } catch (error) {
             console.error("Error fetching pizzas:", error);
@@ -30,14 +30,13 @@ const ShowPizzas = () => {
         
   }
   
-  console.log(Array.isArray(pizzas));
   return (
     <div className = 'APp'>
         <div className='container-fluid'>
              <div className='row mt-3'>
                 <div className='col-md-4 offset-md-4'>
                     <div className='d-grid mx-auto'>
-                        <button className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalproducts'>
+                        <button className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalProducts'>
                             <i className='fa-solid fa-circle-plus'></i> Añadir
                         </button>
                     </div> 
@@ -56,7 +55,7 @@ const ShowPizzas = () => {
                                         <td>{(i+1)}</td>
                                         <td>{pizzas.piz_name}</td>
                                         <td>{pizzas.piz_origin}</td>
-                                        <td>{pizzas.piz_state}</td>
+                                        <td>{pizzas.piz_state.toString()}</td>
                                         <td>
                                             <button className='btn btn-warning'>
                                                 <i className='fa-solid fa-edit'></i>
@@ -75,7 +74,7 @@ const ShowPizzas = () => {
             </div>
         </div>
         <div className='modal fade'>   
-                
+            
         </div>       
     </div>
   )
