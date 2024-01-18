@@ -1,7 +1,7 @@
-
-import ReactPaginate from 'react-paginate';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from 'react-modal'; // Corrected import order
+import ReactPaginate from 'react-paginate';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { showAlert } from '../functions';
@@ -9,7 +9,7 @@ import { showAlert } from '../functions';
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
 />
-import Modal from 'react-modal';  // Import React Modal
+
 
 const MySwal = withReactContent(Swal);
 
@@ -28,9 +28,10 @@ const ShowPizzas = () => {
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [entriesToShow, setEntriesToShow] = useState(5);
   const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [entriesToShow, setEntriesToShow] = useState(5);
+
   // Corrected handleChange for piz_state to properly store the selected value
   const handleStateChange = (e) => {
     setState(e.target.value === 'true'); // Changed to directly set boolean value
@@ -57,14 +58,12 @@ const ShowPizzas = () => {
   useEffect(() => {
     const results = searchTerm
       ? pizzas.filter(pizza =>
-        pizza.piz_name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+          pizza.piz_name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       : pizzas;
     setFiltrarPizzas(results);
-
-    const totalPizzas = results.length;
-    setPageCount(Math.ceil(totalPizzas / entriesToShow));
-  }, [searchTerm, pizzas, entriesToShow]);
+    setPageCount(Math.ceil(results.length / recordsPerPage));
+  }, [searchTerm, pizzas, recordsPerPage]);
 
   const getPizzasToShow = () => {
     const start = currentPage * entriesToShow;
@@ -91,13 +90,13 @@ const ShowPizzas = () => {
     setOrigin(piz_origin);
     setState(piz_state);
     setOperation(op);
-
+    setIsOpen(true);
     setTitle(op === 1 ? 'Registrar pizza' : 'Editar pizza');
 
     window.setTimeout(() => {
       document.getElementById('piz_name').focus();
     }, 500);
-    setIsOpen(true);
+    
   };
   const closeModal = () => {
     setIsOpen(false); // Close the modal
@@ -347,6 +346,11 @@ const ShowPizzas = () => {
                     <option value="false">False</option>
                   </select>
                 </div>
+                <div className='d-grid col-6 mx-auto'>
+                <button onClick={() => validar()} className='btn btn-success'>
+                  <i className='fa-solid fa-floppy-disk'></i> Guardar
+                </button>
+              </div>
               </div>
             </div>
             </Modal>
