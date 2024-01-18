@@ -99,7 +99,7 @@ const ShowPizzas = () => {
     }
   }
   const enviarSolicitud = async (metodo, parametros) => {
-    await axios({ method: metodo, url: url, data: parametros }).then(function (respuesta) {
+    await axios({ method: metodo, url: url, headers:{'Content-Type': 'application/json',}, data: parametros }).then(function (respuesta) {
       var tipo = respuesta.data[0];
       var msj = respuesta.data[1];
       showAlert(msj, tipo);
