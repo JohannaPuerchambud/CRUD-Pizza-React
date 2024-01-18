@@ -19,6 +19,7 @@ const ShowPizzas = () => {
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [entriesToShow, setEntriesToShow] = useState(10);
 
   const handlePageClick = (event) => {
     const newPage = event.selected;
@@ -40,8 +41,7 @@ const ShowPizzas = () => {
       )
       : pizzas;
     setFiltrarPizzas(results);
-    setPageCount(Math.ceil(results.length / recordsPerPage)); // Calculate total pages
-  }, [searchTerm, pizzas, recordsPerPage]);
+  }, [searchTerm, pizzas]);
 
   const getPizzas = async () => {
     try {
@@ -166,18 +166,23 @@ const ShowPizzas = () => {
                   <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
                 </thead>
                 <tbody className='table-group-divider'>
-                  {
-                    filtrarPizzas
-                      .slice(currentPage * recordsPerPage, (currentPage * recordsPerPage) + recordsPerPage) // Slice the data for the current page
-                      .map((pizza, index) => (
-                        <tr key={pizza.piz_id}>
-                          <td>{(currentPage * recordsPerPage) + index + 1}</td>
-                          <td>{pizza.piz_name}</td>
-                          <td>{pizza.piz_origin}</td>
-                          <td>{pizza.piz_state ? 'True' : 'False'}</td>
-                        </tr>
-                      ))
-                  }
+                  {filtrarPizzas.map((pizzas, i) => (
+                    <tr key={pizzas.piz_id}>
+                      <td>{(i + 1)}</td>
+                      <td>{pizzas.piz_name}</td>
+                      <td>{pizzas.piz_origin}</td>
+                      <td>{pizzas.piz_state ? 'True' : 'False'}</td>
+                      <td>
+                        <button onClick={() => openModal(2, pizzas.piz_id, pizzas.piz_name, pizzas.piz_origin, pizzas.piz_state)} className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
+                          <i className='fa-solid fa-edit'></i>
+                        </button>
+                        &nbsp;
+                        <button onClick={() => deletePizza(pizzas.piz_id, pizzas.piz_name)} className='btn btn-danger'>
+                          <i className='fa-solid fa-trash'></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -189,7 +194,7 @@ const ShowPizzas = () => {
               previousLabel={'Anterior'}
               nextLabel={'Siguiente'}
               breakLabel={'...'}
-              pageCount={pageCount} // Set the dynamic page count
+              pageCount={10} // Set the dynamic page count
               onPageChange={handlePageClick}
               marginPagesDisplayed={2}
               pageRangeDisplayed={5}
@@ -207,25 +212,24 @@ const ShowPizzas = () => {
           </div>
         </div>
         <div className='row'>
-        <div className='col-12 d-flex justify-content-center'>
-          <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
-          <select
-            id="entriesToShow"
-            className='form-select'
-            style={{ width: 'auto' }}  
-            value={entriesToShow}
-            onChange={handleEntriesChange}
-          >
-            <option value="1">1</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            {/* Agregar más opciones de ser necesario */}
-          </select>
-          <span className="ms-2 align-self-center">entradas</span>
+          <div className='col-12 d-flex justify-content-center'>
+            <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
+            <select
+              id="entriesToShow"
+              className='form-select'
+              style={{ width: 'auto' }}
+              value={entriesToShow}
+              onChange={handleEntriesChange}
+            >
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="10">15</option>
+              {/* Agregar más opciones de ser necesario */}
+            </select>
+            <span className="ms-2 align-self-center">entradas</span>
+          </div>
         </div>
-        </div>
-
-
       </div>
       <div id='modalpizzas' className='modal fade' aria-hidden='true'>
         <div className='modal-dialog'>
