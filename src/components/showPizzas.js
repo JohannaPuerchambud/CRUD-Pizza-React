@@ -5,6 +5,10 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { showAlert } from '../functions';
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
 
 const ShowPizzas = () => {
   const url = 'http://localhost:3000/pizzas';
@@ -20,6 +24,15 @@ const ShowPizzas = () => {
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [entriesToShow, setEntriesToShow] = useState(10);
+
+  const getPizzasToShow = () => {
+    const start = currentPage * entriesToShow;
+    const end = start + entriesToShow;
+    return {
+      list: filtrarPizzas.slice(start, end), // Las pizzas en la página actual
+      start // El índice de inicio
+    };
+  };
 
   const handlePageClick = (event) => {
     const newPage = event.selected;
@@ -44,15 +57,15 @@ const ShowPizzas = () => {
 
     const totalPizzas = results.length;
     setPageCount(Math.ceil(totalPizzas / entriesToShow));
-  }, [searchTerm, pizzas,entriesToShow]);
-
-  const getPizzasToShow = () => {
-    const start = currentPage * entriesToShow;
-    const end = start + entriesToShow;
-    return filtrarPizzas.slice(start, end);
-  };
+  }, [searchTerm, pizzas, entriesToShow]);
 
   const { list: pizzasToShow, start } = getPizzasToShow();
+
+  useEffect(() => {
+    const { list, start } = getPizzasToShow();
+  }, [currentPage, entriesToShow, filtrarPizzas]);
+
+
 
   const getPizzas = async () => {
     try {
@@ -152,23 +165,33 @@ const ShowPizzas = () => {
             <h2 className='text-center p-3'>Administración de Pizzas</h2>
           </div>
         </div>
+
         <div className='row mb-3'>
-          <div className='col-lg-2 d-flex justify-content-start'>
+          <div className='col-12 d-flex justify-content-center'>
             <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
               <i className='fa-solid fa-circle-plus'></i> Añadir
             </button>
           </div>
-          <div className='col-lg-6'></div>
-          <div className='col-lg-2 d-flex justify-content-end'>
-            <input
-              type='text'
-              className='form-control w-auto'
-              placeholder='Search...'
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div />
+        </div>
+
+        <div className='col-lg-6'></div>
+
+        <div className='col-lg-8 offset-lg-2'>
+          <div className='d-flex justify-content-end mb-3'>
+            <div className="input-group w-auto">
+              <input
+                type='text'
+                className='form-control'
+                placeholder='Search...'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ borderColor: 'black' }}
+              />
+            </div>
           </div>
         </div>
+
         <div className='row'>
           <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
             <div className='table-responsive'>
@@ -184,11 +207,11 @@ const ShowPizzas = () => {
                       <td>{pizzas.piz_origin}</td>
                       <td>{pizzas.piz_state ? 'True' : 'False'}</td>
                       <td>
-                        <button onClick={() => openModal(2, pizzas.piz_id, pizzas.piz_name, pizzas.piz_origin, pizzas.piz_state)} className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
+                        <button onClick={() => openModal(2, pizzas.piz_id, pizzas.piz_name, pizzas.piz_origin, pizzas.piz_state)} className='btn btn-success' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
                           <i className='fa-solid fa-edit'></i>
                         </button>
                         &nbsp;
-                        <button onClick={() => deletePizza(pizzas.piz_id, pizzas.piz_name)} className='btn btn-danger'>
+                        <button onClick={() => deletePizza(pizzas.piz_id, pizzas.piz_name)} className='btn btn-info'>
                           <i className='fa-solid fa-trash'></i>
                         </button>
                       </td>
@@ -251,6 +274,11 @@ const ShowPizzas = () => {
             </div>
             <div className='modal-body'>
               <input type='hidden' id='piz_id'></input>
+              <div className='input-group mb-3'>
+                <span className='input-group-text'><i className='fa-solid fa-hashtag'></i></span>
+                <input type='text' id='piz_id' className='form-control' placeholder='Id' value={piz_id}
+                  onChange={(e) => setName(e.target.value)}></input>
+              </div>
               <div className='input-group mb-3'>
                 <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
                 <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
