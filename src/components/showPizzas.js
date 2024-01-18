@@ -19,10 +19,15 @@ const ShowPizzas = () => {
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [entriesToShow, setEntriesToShow] = useState(10);
 
   const handlePageClick = (event) => {
     const newPage = event.selected;
     setCurrentPage(newPage);
+  };
+
+  const handleEntriesChange = (event) => {
+    setEntriesToShow(Number(event.target.value));
   };
 
   useEffect(() => {
@@ -205,6 +210,24 @@ const ShowPizzas = () => {
               activeClassName={'active'} // Clase para la página activa
             />
           </div>
+        </div>
+        <div className='row'>
+        <div className='col-12 d-flex justify-content-center'>
+          <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
+          <select
+            id="entriesToShow"
+            className='form-select'
+            style={{ width: 'auto' }}  
+            value={entriesToShow}
+            onChange={handleEntriesChange}
+          >
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            {/* Agregar más opciones de ser necesario */}
+          </select>
+          <span className="ms-2 align-self-center">entradas</span>
+        </div>
         </div>
       </div>
       <div id='modalpizzas' className='modal fade' aria-hidden='true'>
