@@ -184,21 +184,6 @@ const ShowPizzas = () => {
           </div>
         </div>
         <div className='row'>
-          <div className='col-12 d-flex justify-content-start align-items-end'>
-            <div className="dropdown">
-              <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                {recordsPerPage ? `${recordsPerPage} Registros` : "Select Number"}
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(5)}>5</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(10)}>10</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(15)}>15</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(20)}>20</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className='row'>
           <div className='col-12 d-flex justify-content-center'>
             <ReactPaginate
               previousLabel={'Anterior'}
