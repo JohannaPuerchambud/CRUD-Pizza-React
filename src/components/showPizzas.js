@@ -28,7 +28,6 @@ const ShowPizzas = () => {
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [entriesToShow, setEntriesToShow] = useState(10);
   const [entriesToShow, setEntriesToShow] = useState(5);
   const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -123,7 +122,7 @@ const ShowPizzas = () => {
       const parametros = {
         piz_name: piz_name.trim(),
         piz_origin: piz_origin.trim(),
-        piz_state: piz_state, 
+        piz_state: piz_state,
       };
       if (operation === 2) {
         parametros.piz_id = piz_id; // Add the ID only for updating
@@ -163,11 +162,11 @@ const ShowPizzas = () => {
 
       const response = await axios(config);
       //if (response.status === 404) {
-        // Process response.data
-        console.log(response);
-        if (callback && response.status === 200) {
-          callback();
-        }
+      // Process response.data
+      console.log(response);
+      if (callback && response.status === 200) {
+        callback();
+      }
       //}
       // Rest of your response handling code...
     } catch (error) {
@@ -264,6 +263,7 @@ const ShowPizzas = () => {
             </div>
           </div>
         </div>
+
         <div className='row'>
           <div className='col-12 d-flex justify-content-center'>
             <ReactPaginate
@@ -310,136 +310,24 @@ const ShowPizzas = () => {
       </div>
       <div id='modalpizzas' className='modal fade' aria-hidden='true'>
         <div className='modal-dialog'>
-        <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Pizza Modal"
-        className="Modal"
-        overlayClassName="Overlay"
-      >
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <label className='h5'>{title}</label>
-              <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div className='modal-body'>
-              <input type='hidden' id='piz_id' value={piz_id}></input>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
-                <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                  onChange={handleNameChange}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
-                  onChange={(e) => setOrigin(e.target.value)}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
-                <select
-                  id='piz_state'
-                  className='form-control'
-                  value={piz_state ? "true" : "false"}
-                  onChange={handleStateChange}
-                >
-                  <option value="" disabled>- Seleccione el estado -</option> {/* Opción por defecto */}
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-          </div>
-
-          <div className='row'>
-            <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
-              <div className='table-responsive'>
-                <table className='table table-bordered '>
-                  <thead class='thead-dark'>
-                    <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
-                  </thead>
-                  <tbody className='table-group-divider'>
-                    {getPizzasToShow().map((pizzas, i) => (
-                      <tr key={pizzas.piz_id}>
-                        <td>{(start + i + 1)}</td>
-                        <td>{pizzas.piz_name}</td>
-                        <td>{pizzas.piz_origin}</td>
-                        <td>{pizzas.piz_state ? 'True' : 'False'}</td>
-                        <td>
-                          <button onClick={() => openModal(2, pizzas.piz_id, pizzas.piz_name, pizzas.piz_origin, pizzas.piz_state)} className='btn btn-success' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
-                            <i className='fa-solid fa-edit'></i>
-                          </button>
-                          &nbsp;
-                          <button onClick={() => deletePizza(pizzas.piz_id, pizzas.piz_name)} className='btn btn-info'>
-                            <i className='fa-solid fa-trash'></i>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div className='row'>
-            <div className='col-12 d-flex justify-content-center'>
-              <ReactPaginate
-                previousLabel={'Anterior'}
-                nextLabel={'Siguiente'}
-                breakLabel={'...'}
-                pageCount={pageCount} // Set the dynamic page count
-                onPageChange={handlePageClick}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                containerClassName={'pagination'} // Clase para el contenedor
-                pageClassName={'page-item'} // Clase para cada página
-                pageLinkClassName={'page-link'} // Clase para el enlace de cada página
-                previousClassName={'page-item'}
-                previousLinkClassName={'page-link'}
-                nextClassName={'page-item'}
-                nextLinkClassName={'page-link'}
-                breakClassName={'page-item'}
-                breakLinkClassName={'page-link'}
-                activeClassName={'active'} // Clase para la página activa
-              />
-            </div>
-          </div>
-          <div className='row'>
-            <div className='col-12 d-flex justify-content-center'>
-              <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
-              <select
-                id="entriesToShow"
-                className='form-select'
-                style={{ width: 'auto' }}
-                value={entriesToShow}
-                onChange={handleEntriesChange}
-              >
-                <option value="1">1</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="10">15</option>
-                {/* Agregar más opciones de ser necesario */}
-              </select>
-              <span className="ms-2 align-self-center">entradas</span>
-            </div>
-          </div>
-        </div>
-        <div id='modalpizzas' className='modal fade' aria-hidden='true'>
-          <div className='modal-dialog'>
+          <Modal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+            contentLabel="Pizza Modal"
+            className="Modal"
+            overlayClassName="Overlay"
+          >
             <div className='modal-content'>
               <div className='modal-header'>
                 <label className='h5'>{title}</label>
                 <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
               </div>
               <div className='modal-body'>
-                <input type='hidden' id='piz_id'></input>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-hashtag'></i></span>
-                  <input type='text' id='piz_id' className='form-control' placeholder='Id' value={piz_id}
-                    onChange={(e) => setId(e.target.value)}></input>
-                </div>
+                <input type='hidden' id='piz_id' value={piz_id}></input>
                 <div className='input-group mb-3'>
                   <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
                   <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                    onChange={(e) => setName(e.target.value)}></input>
+                    onChange={handleNameChange}></input>
                 </div>
                 <div className='input-group mb-3'>
                   <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
@@ -451,30 +339,147 @@ const ShowPizzas = () => {
                   <select
                     id='piz_state'
                     className='form-control'
-                    value={piz_state}
-                    onChange={(e) => setState(e.target.value === 'true')}
+                    value={piz_state ? "true" : "false"}
+                    onChange={handleStateChange}
                   >
-                    <option value="" disabled selected>- Seleccione el estado -</option> {/* Opción por defecto */}
+                    <option value="" disabled>- Seleccione el estado -</option> {/* Opción por defecto */}
                     <option value="true">True</option>
                     <option value="false">False</option>
                   </select>
                 </div>
-
-                <div className='d-grid col-6 mx-auto'>
-                  <button onClick={() => validar()} className='btn btn-success'>
-                    <i className='fa-solid fa-floppy-disk'></i> Guardar
-                  </button>
-                </div>
-              </div>
-              <div className='modal-footer'>
-                <button type='button' onClick={closeModal} className='btn btn-secondary'>Cerrar</button>
               </div>
             </div>
             </Modal>
-        </div>
+              <div className='row'>
+                <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
+                  <div className='table-responsive'>
+                    <table className='table table-bordered '>
+                      <thead class='thead-dark'>
+                        <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
+                      </thead>
+                      <tbody className='table-group-divider'>
+                        {getPizzasToShow().map((pizzas, i) => (
+                          <tr key={pizzas.piz_id}>
+                            <td>{(start + i + 1)}</td>
+                            <td>{pizzas.piz_name}</td>
+                            <td>{pizzas.piz_origin}</td>
+                            <td>{pizzas.piz_state ? 'True' : 'False'}</td>
+                            <td>
+                              <button onClick={() => openModal(2, pizzas.piz_id, pizzas.piz_name, pizzas.piz_origin, pizzas.piz_state)} className='btn btn-success' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
+                                <i className='fa-solid fa-edit'></i>
+                              </button>
+                              &nbsp;
+                              <button onClick={() => deletePizza(pizzas.piz_id, pizzas.piz_name)} className='btn btn-info'>
+                                <i className='fa-solid fa-trash'></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-12 d-flex justify-content-center'>
+                  <ReactPaginate
+                    previousLabel={'Anterior'}
+                    nextLabel={'Siguiente'}
+                    breakLabel={'...'}
+                    pageCount={pageCount} // Set the dynamic page count
+                    onPageChange={handlePageClick}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    containerClassName={'pagination'} // Clase para el contenedor
+                    pageClassName={'page-item'} // Clase para cada página
+                    pageLinkClassName={'page-link'} // Clase para el enlace de cada página
+                    previousClassName={'page-item'}
+                    previousLinkClassName={'page-link'}
+                    nextClassName={'page-item'}
+                    nextLinkClassName={'page-link'}
+                    breakClassName={'page-item'}
+                    breakLinkClassName={'page-link'}
+                    activeClassName={'active'} // Clase para la página activa
+                  />
+                </div>
+              </div>
+              <div className='row'>
+                <div className='col-12 d-flex justify-content-center'>
+                  <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
+                  <select
+                    id="entriesToShow"
+                    className='form-select'
+                    style={{ width: 'auto' }}
+                    value={entriesToShow}
+                    onChange={handleEntriesChange}
+                  >
+                    <option value="1">1</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="10">15</option>
+                    {/* Agregar más opciones de ser necesario */}
+                  </select>
+                  <span className="ms-2 align-self-center">entradas</span>
+                </div>
+              </div>
+            </div>
+           
+            <div id='modalpizzas' className='modal fade' aria-hidden='true'>
+              <div className='modal-dialog'>
+                <div className='modal-content'>
+                  <div className='modal-header'>
+                    <label className='h5'>{title}</label>
+                    <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                  </div>
+                  <div className='modal-body'>
+                    <input type='hidden' id='piz_id'></input>
+                    <div className='input-group mb-3'>
+                      <span className='input-group-text'><i className='fa-solid fa-hashtag'></i></span>
+                      <input type='text' id='piz_id' className='form-control' placeholder='Id' value={piz_id}
+                        onChange={(e) => setId(e.target.value)}></input>
+                    </div>
+                    <div className='input-group mb-3'>
+                      <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
+                      <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
+                        onChange={(e) => setName(e.target.value)}></input>
+                    </div>
+                    <div className='input-group mb-3'>
+                      <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
+                      <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
+                        onChange={(e) => setOrigin(e.target.value)}></input>
+                    </div>
+                    <div className='input-group mb-3'>
+                      <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
+                      <select
+                        id='piz_state'
+                        className='form-control'
+                        value={piz_state}
+                        onChange={(e) => setState(e.target.value === 'true')}
+                      >
+                        <option value="" disabled selected>- Seleccione el estado -</option> {/* Opción por defecto */}
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
+                    </div>
+
+                    <div className='d-grid col-6 mx-auto'>
+                      <button onClick={() => validar()} className='btn btn-success'>
+                        <i className='fa-solid fa-floppy-disk'></i> Guardar
+                      </button>
+                    </div>
+                  </div>
+                  <div className='modal-footer'>
+                    <button type='button' onClick={closeModal} className='btn btn-secondary'>Cerrar</button>
+                  </div>
+                  
+                </div>
+                
+              
+            </div>
         </div>
       </div>
-      );
+    </div>
+  );
 };
 
-      export default ShowPizzas
+export default ShowPizzas
