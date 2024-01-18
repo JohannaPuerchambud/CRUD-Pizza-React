@@ -5,6 +5,11 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { showAlert } from '../functions';
+import Modal from 'react-modal';  // Import React Modal
+
+const MySwal = withReactContent(Swal);
+
+Modal.setAppElement('#root');
 
 const ShowPizzas = () => {
   const url = 'http://localhost:3000/pizzas';
@@ -14,20 +19,32 @@ const ShowPizzas = () => {
   const [piz_id, setId] = useState('');
   const [piz_name, setName] = useState('');
   const [piz_origin, setOrigin] = useState('');
-  const [piz_state, setState] = useState('');
+  const [piz_state, setState] = useState(true);
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const [entriesToShow, setEntriesToShow] = useState(5);
+  const [recordsPerPage, setRecordsPerPage] = useState(5);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  // Corrected handleChange for piz_state to properly store the selected value
+  const handleStateChange = (e) => {
+    setState(e.target.value === 'true'); // Changed to directly set boolean value
+  };
+  const handleNameChange = (e) => {
+    setName(e.target.value); // Actualizar el estado con el valor del input
+  };
   const handlePageClick = (event) => {
     const newPage = event.selected;
     setCurrentPage(newPage);
   };
 
   const handleEntriesChange = (event) => {
-    setEntriesToShow(Number(event.target.value));
+    const newEntriesToShow = Number(event.target.value);
+    setEntriesToShow(newEntriesToShow);
+    setRecordsPerPage(newEntriesToShow);
   };
+
 
   useEffect(() => {
     getPizzas();
@@ -45,78 +62,105 @@ const ShowPizzas = () => {
 
   const getPizzas = async () => {
     try {
-      const respuesta = await axios.get(url);
-      console.log(respuesta.data); // Check what the API is returning
-      setPizzas(respuesta.data);
+      const response = await axios.get(url);
+      setPizzas(response.data);
     } catch (error) {
       console.error("Error fetching pizzas:", error);
+      showAlert('Error fetching pizzas', 'error');
     }
   };
 
-  const openModal = (op, piz_id, piz_name, piz_origin, piz_state) => {
-    setId('');
-    setName('');
-    setOrigin('');
-    setState('');
+  const openModal = (op, piz_id = '', piz_name = '', piz_origin = '', piz_state = '') => {
+    // Set the states with the provided values or default to empty strings
+    setId(piz_id);
+    setName(piz_name);
+    setOrigin(piz_origin);
+    setState(piz_state);
     setOperation(op);
-    if (op == 1) {
-      setTitle('Registrar pizza');
-    } else if (op == 2) {
-      setTitle('Editar pizza');
-      setId(piz_id);
-      setName(piz_name);
-      setOrigin(piz_origin);
-      setState(piz_state);
-    }
-    window.setTimeout(function () {
+
+    setTitle(op === 1 ? 'Registrar pizza' : 'Editar pizza');
+
+    window.setTimeout(() => {
       document.getElementById('piz_name').focus();
-
     }, 500);
-  }
+    setIsOpen(true);
+  };
+  const closeModal = () => {
+    setIsOpen(false); // Close the modal
+  };
   const validar = () => {
-    var parametros;
-    var metodo;
-    if (piz_name.trim() === '') {
-      showAlert('Escribe el nombre de la pizza', 'warning');
-    }
-    else if (piz_origin.trim() === '') {
-      showAlert('Escribe el origen de la pizza', 'warning');
+    let error = false;
 
+    if (!piz_name.trim()) {
+      showAlert('Escribe el nombre de la pizza', 'warning');
+      error = true;
     }
-    else if (piz_state !== true && piz_state !== false) {
+    if (!piz_origin.trim()) {
+      showAlert('Escribe el origen de la pizza', 'warning');
+      error = true;
+    }
+    if (piz_state !== true && piz_state !== false) {
       showAlert('Escribe el estado de la pizza', 'warning');
+      error = true;
     }
-    else {
-      if (operation === 1) {
-        parametros = { name: piz_name.trim(), origin: piz_origin.trim(), state: piz_state };
-        metodo = 'POST';
+
+    if (!error) {
+      const parametros = {
+        piz_name: piz_name.trim(),
+        piz_origin: piz_origin.trim(),
+        piz_state: piz_state, 
+      };
+      if (operation === 2) {
+        parametros.piz_id = piz_id; // Add the ID only for updating
       }
-      else {
-        parametros = { id: piz_id, name: piz_name.trim(), origin: piz_origin.trim(), state: piz_state };
-        metodo = 'PUT';
-      }
-      enviarSolicitud(metodo, parametros);
-    }
-  }
-  const enviarSolicitud = async (metodo, parametros) => {
-    await axios({ method: metodo, url: url, data: parametros }).then(function (respuesta) {
-      var tipo = respuesta.data[0];
-      var msj = respuesta.data[1];
-      showAlert(msj, tipo);
-      if (tipo === 'success') {
-        document.getElementById('btnCerrar').click();
-        getPizzas();
-      }
-    })
-      .catch(function (error) {
-        showAlert('Error en la solicitud', 'error');
-        console.log(error);
+
+      enviarSolicitud(operation === 1 ? 'POST' : 'PUT', parametros, () => {
+        // Callback function to reload the page
+        window.location.reload();
       });
+    }
+  };
+  const enviarSolicitud = async (metodo, parametros) => {
+    try {
+      let endpoint = url;
+      let config = {};
+
+      // Adjust the endpoint and config based on the method
+      if (metodo === 'POST' || metodo === 'PUT') {
+        // Convert object to query string for POST and PUT
+        const queryParams = new URLSearchParams(parametros).toString();
+        endpoint += '?' + queryParams;
+        config = {
+          method: metodo,
+          url: endpoint,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+      } else if (metodo === 'DELETE') {
+        // Append piz_id as query param for DELETE
+        endpoint += `?piz_id=${parametros.piz_id}`;
+        config = {
+          method: metodo,
+          url: endpoint,
+        };
+      }
+
+      const response = await axios(config);
+      //if (response.status === 404) {
+        // Process response.data
+        console.log(response);
+      //}
+      // Rest of your response handling code...
+    } catch (error) {
+      // Error handling
+    }
   }
-  const deletePizza = (id, name) => {
-    const MySwal = withReactContent(Swal);
+
+  const deletePizza = (piz_id, piz_name) => {
+    // ...
     MySwal.fire({
-      title: `¿Seguro de eliminar el producto ${name}?`,
+      title: `¿Seguro de eliminar el producto ${piz_name}?`,
       icon: 'question',
       text: 'No se podrá dar marcha atrás',
       showCancelButton: true,
@@ -124,14 +168,12 @@ const ShowPizzas = () => {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        setId(id);
-        enviarSolicitud('DELETE', { piz_id: id });
+        enviarSolicitud('DELETE', { piz_id: piz_id });
       } else {
         showAlert('El producto NO fue eliminado', 'info');
       }
     });
   }
-  console.log(Array.isArray(pizzas));
 
   return (
     <div className='App'>
@@ -168,33 +210,28 @@ const ShowPizzas = () => {
                 <tbody className='table-group-divider'>
                   {
                     filtrarPizzas
-                      .slice(currentPage * recordsPerPage, (currentPage * recordsPerPage) + recordsPerPage) // Slice the data for the current page
+                      .slice(currentPage * recordsPerPage, (currentPage * recordsPerPage) + recordsPerPage)
                       .map((pizza, index) => (
                         <tr key={pizza.piz_id}>
                           <td>{(currentPage * recordsPerPage) + index + 1}</td>
                           <td>{pizza.piz_name}</td>
                           <td>{pizza.piz_origin}</td>
                           <td>{pizza.piz_state ? 'True' : 'False'}</td>
+                          <td>
+                            <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-warning'>
+                              <i className='fa-solid fa-edit'></i>
+                            </button>
+                            &nbsp;
+                            <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-danger'>
+                              <i className='fa-solid fa-trash'></i>
+                            </button>
+                          </td>
                         </tr>
                       ))
                   }
+
                 </tbody>
               </table>
-            </div>
-          </div>
-        </div>
-        <div className='row'>
-          <div className='col-12 d-flex justify-content-start align-items-end'>
-            <div className="dropdown">
-              <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                {recordsPerPage ? `${recordsPerPage} Registros` : "Select Number"}
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(5)}>5</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(10)}>10</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(15)}>15</a></li>
-                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(20)}>20</a></li>
-              </ul>
             </div>
           </div>
         </div>
@@ -222,39 +259,46 @@ const ShowPizzas = () => {
           </div>
         </div>
         <div className='row'>
-        <div className='col-12 d-flex justify-content-center'>
-          <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
-          <select
-            id="entriesToShow"
-            className='form-select'
-            style={{ width: 'auto' }}  
-            value={entriesToShow}
-            onChange={handleEntriesChange}
-          >
-            <option value="1">1</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            {/* Agregar más opciones de ser necesario */}
-          </select>
-          <span className="ms-2 align-self-center">entradas</span>
-        </div>
+          <div className='col-12 d-flex justify-content-center'>
+            <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
+            <select
+              id="entriesToShow"
+              className='form-select'
+              style={{ width: 'auto' }}
+              value={entriesToShow}
+              onChange={handleEntriesChange}
+            >
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              {/* Agregar más opciones de ser necesario */}
+            </select>
+            <span className="ms-2 align-self-center">entradas</span>
+          </div>
         </div>
 
 
       </div>
       <div id='modalpizzas' className='modal fade' aria-hidden='true'>
         <div className='modal-dialog'>
+        <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Pizza Modal"
+        className="Modal"
+        overlayClassName="Overlay"
+      >
           <div className='modal-content'>
             <div className='modal-header'>
               <label className='h5'>{title}</label>
               <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
             <div className='modal-body'>
-              <input type='hidden' id='piz_id'></input>
+              <input type='hidden' id='piz_id' value={piz_id}></input>
               <div className='input-group mb-3'>
                 <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
                 <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                  onChange={(e) => setName(e.target.value)}></input>
+                  onChange={handleNameChange}></input>
               </div>
               <div className='input-group mb-3'>
                 <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
@@ -266,10 +310,10 @@ const ShowPizzas = () => {
                 <select
                   id='piz_state'
                   className='form-control'
-                  value={piz_state}
-                  onChange={(e) => setState(e.target.value === 'true')}
+                  value={piz_state ? "true" : "false"}
+                  onChange={handleStateChange}
                 >
-                  <option value="" disabled selected>- Seleccione el estado -</option> {/* Opción por defecto */}
+                  <option value="" disabled>- Seleccione el estado -</option> {/* Opción por defecto */}
                   <option value="true">True</option>
                   <option value="false">False</option>
                 </select>
@@ -282,9 +326,10 @@ const ShowPizzas = () => {
               </div>
             </div>
             <div className='modal-footer'>
-              <button type='button' id='btnCerrar' className='btn btn-secondary' data-bs-dismiss='modal'>Cerrar</button>
+              <button type='button' onClick={closeModal} className='btn btn-secondary'>Cerrar</button>
             </div>
           </div>
+          </Modal>
         </div>
       </div>
     </div>
