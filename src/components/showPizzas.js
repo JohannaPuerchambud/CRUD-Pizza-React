@@ -120,7 +120,7 @@ const ShowPizzas = () => {
       });
     }
   };
-  const enviarSolicitud = async (metodo, parametros) => {
+  const enviarSolicitud = async (metodo, parametros, callback) => {
     try {
       let endpoint = url;
       let config = {};
@@ -150,10 +150,14 @@ const ShowPizzas = () => {
       //if (response.status === 404) {
         // Process response.data
         console.log(response);
+        if (callback && response.status === 200) {
+          callback();
+        }
       //}
       // Rest of your response handling code...
     } catch (error) {
       // Error handling
+      console.error("Error in enviarSolicitud:", error);
     }
   }
 
@@ -169,6 +173,7 @@ const ShowPizzas = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         enviarSolicitud('DELETE', { piz_id: piz_id });
+        window.location.reload();
       } else {
         showAlert('El producto NO fue eliminado', 'info');
       }
