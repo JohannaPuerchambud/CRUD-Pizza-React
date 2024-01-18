@@ -19,7 +19,6 @@ const ShowPizzas = () => {
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [entriesToShow, setEntriesToShow] = useState(10);
 
   const handlePageClick = (event) => {
     const newPage = event.selected;
@@ -41,7 +40,8 @@ const ShowPizzas = () => {
       )
       : pizzas;
     setFiltrarPizzas(results);
-  }, [searchTerm, pizzas]);
+    setPageCount(Math.ceil(results.length / recordsPerPage)); // Calculate total pages
+  }, [searchTerm, pizzas, recordsPerPage]);
 
   const getPizzas = async () => {
     try {
@@ -152,7 +152,7 @@ const ShowPizzas = () => {
             <input
               type='text'
               className='form-control w-auto'
-              placeholder='Buscar pizza...'
+              placeholder='Search...'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -163,28 +163,38 @@ const ShowPizzas = () => {
             <div className='table-responsive'>
               <table className='table table-bordered'>
                 <thead>
-                  <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th></th></tr>
+                  <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
                 </thead>
                 <tbody className='table-group-divider'>
-                  {filtrarPizzas.map((pizzas, i) => (
-                    <tr key={pizzas.piz_id}>
-                      <td>{(i + 1)}</td>
-                      <td>{pizzas.piz_name}</td>
-                      <td>{pizzas.piz_origin}</td>
-                      <td>{pizzas.piz_state ? 'True' : 'False'}</td>
-                      <td>
-                        <button onClick={() => openModal(2, pizzas.piz_id, pizzas.piz_name, pizzas.piz_origin, pizzas.piz_state)} className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
-                          <i className='fa-solid fa-edit'></i>
-                        </button>
-                        &nbsp;
-                        <button onClick={() => deletePizza(pizzas.piz_id, pizzas.piz_name)} className='btn btn-danger'>
-                          <i className='fa-solid fa-trash'></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {
+                    filtrarPizzas
+                      .slice(currentPage * recordsPerPage, (currentPage * recordsPerPage) + recordsPerPage) // Slice the data for the current page
+                      .map((pizza, index) => (
+                        <tr key={pizza.piz_id}>
+                          <td>{(currentPage * recordsPerPage) + index + 1}</td>
+                          <td>{pizza.piz_name}</td>
+                          <td>{pizza.piz_origin}</td>
+                          <td>{pizza.piz_state ? 'True' : 'False'}</td>
+                        </tr>
+                      ))
+                  }
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-12 d-flex justify-content-start align-items-end'>
+            <div className="dropdown">
+              <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                {recordsPerPage ? `${recordsPerPage} Registros` : "Select Number"}
+              </button>
+              <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(5)}>5</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(10)}>10</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(15)}>15</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => setRecordsPerPage(20)}>20</a></li>
+              </ul>
             </div>
           </div>
         </div>
@@ -194,10 +204,10 @@ const ShowPizzas = () => {
               previousLabel={'Anterior'}
               nextLabel={'Siguiente'}
               breakLabel={'...'}
-              pageCount={12} // Total de páginas
+              pageCount={pageCount} // Set the dynamic page count
+              onPageChange={handlePageClick}
               marginPagesDisplayed={2}
               pageRangeDisplayed={5}
-              onPageChange={handlePageClick} // Manejador de cambio de página
               containerClassName={'pagination'} // Clase para el contenedor
               pageClassName={'page-item'} // Clase para cada página
               pageLinkClassName={'page-link'} // Clase para el enlace de cada página
@@ -229,6 +239,8 @@ const ShowPizzas = () => {
           <span className="ms-2 align-self-center">entradas</span>
         </div>
         </div>
+
+
       </div>
       <div id='modalpizzas' className='modal fade' aria-hidden='true'>
         <div className='modal-dialog'>
