@@ -41,7 +41,18 @@ const ShowPizzas = () => {
       )
       : pizzas;
     setFiltrarPizzas(results);
-  }, [searchTerm, pizzas]);
+
+    const totalPizzas = results.length;
+    setPageCount(Math.ceil(totalPizzas / entriesToShow));
+  }, [searchTerm, pizzas,entriesToShow]);
+
+  const getPizzasToShow = () => {
+    const start = currentPage * entriesToShow;
+    const end = start + entriesToShow;
+    return filtrarPizzas.slice(start, end);
+  };
+
+  const { list: pizzasToShow, start } = getPizzasToShow();
 
   const getPizzas = async () => {
     try {
@@ -99,7 +110,7 @@ const ShowPizzas = () => {
     }
   }
   const enviarSolicitud = async (metodo, parametros) => {
-    await axios({ method: metodo, url: url, headers:{'Content-Type': 'application/json',}, data: parametros }).then(function (respuesta) {
+    await axios({ method: metodo, url: url, headers: { 'Content-Type': 'application/json', }, data: parametros }).then(function (respuesta) {
       var tipo = respuesta.data[0];
       var msj = respuesta.data[1];
       showAlert(msj, tipo);
@@ -166,9 +177,9 @@ const ShowPizzas = () => {
                   <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
                 </thead>
                 <tbody className='table-group-divider'>
-                  {filtrarPizzas.map((pizzas, i) => (
+                  {getPizzasToShow().map((pizzas, i) => (
                     <tr key={pizzas.piz_id}>
-                      <td>{(i + 1)}</td>
+                      <td>{(start + i + 1)}</td>
                       <td>{pizzas.piz_name}</td>
                       <td>{pizzas.piz_origin}</td>
                       <td>{pizzas.piz_state ? 'True' : 'False'}</td>
@@ -194,7 +205,7 @@ const ShowPizzas = () => {
               previousLabel={'Anterior'}
               nextLabel={'Siguiente'}
               breakLabel={'...'}
-              pageCount={10} // Set the dynamic page count
+              pageCount={pageCount} // Set the dynamic page count
               onPageChange={handlePageClick}
               marginPagesDisplayed={2}
               pageRangeDisplayed={5}
