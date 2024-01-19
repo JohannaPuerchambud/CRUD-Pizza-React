@@ -104,31 +104,6 @@ const ShowPizzas = () => {
       showAlert('Escribe el estado de la pizza', 'warning');
       return false;
     }
-<<<<<<< HEAD
-
-    if (operation === 1) {
-      parametros = { name: piz_name.trim(), origin: piz_origin.trim(), state: piz_state };
-      metodo = 'POST';
-    } else if (operation === 2 && piz_id) {
-      parametros = { id: piz_id, name: piz_name.trim(), origin: piz_origin.trim(), state: piz_state };
-      metodo = 'PUT';
-    } else {
-      showAlert('ID no válido', 'error');
-      return;
-    }
-
-    enviarSolicitud(metodo, parametros);
-  }
-
-  const enviarSolicitud = async (metodo, parametros) => {
-    await axios({ method: metodo, url: url, headers: { 'Content-Type': 'application/json', }, data: parametros }).then(function (respuesta) {
-      var tipo = respuesta.data[0];
-      var msj = respuesta.data[1];
-      showAlert(msj, tipo);
-      if (tipo === 'success') {
-        document.getElementById('btnCerrar').click();
-        getPizzas();
-=======
     return true;
   };
   const enviarSolicitud = async (metodo, parametros, callback) => {
@@ -154,7 +129,6 @@ const ShowPizzas = () => {
           method: metodo,
           url: endpoint,
         };
->>>>>>> c8d839ba50211241649df4526d9d10d0da26aaf0
       }
       const response = await axios(config);
       if (callback && response.status === 200) {
