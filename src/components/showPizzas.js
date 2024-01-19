@@ -107,12 +107,12 @@ const ShowPizzas = () => {
     if (operation === 1) {
       parametros = { name: piz_name.trim(), origin: piz_origin.trim(), state: piz_state };
       metodo = 'POST';
-    } else if (operation === 2 && piz_id) {  
+    } else if (operation === 2 && piz_id) {
       parametros = { id: piz_id, name: piz_name.trim(), origin: piz_origin.trim(), state: piz_state };
       metodo = 'PUT';
     } else {
       showAlert('ID no válido', 'error');
-      return; 
+      return;
     }
 
     enviarSolicitud(metodo, parametros);
