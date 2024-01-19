@@ -43,13 +43,13 @@ const ShowPizzas = () => {
     setEntriesToShow(newEntriesToShow);
     setRecordsPerPage(newEntriesToShow);
   };
-  
+
 
   useEffect(() => {
     const filteredResults = searchTerm
       ? pizzas.filter(pizza =>
-          pizza.piz_name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        pizza.piz_name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
       : pizzas;
     setFiltrarPizzas(filteredResults);
     setPageCount(Math.ceil(filteredResults.length / recordsPerPage));
@@ -191,23 +191,23 @@ const ShowPizzas = () => {
         </div>
         <div className='col-lg-6'></div>
         <div className='col-lg-8 offset-lg-2'>
-        {filtrarPizzas.length > 0 && (
-  <>
-    <div className='d-flex justify-content-end mb-3'>
-            <div className="input-group w-auto">
-              <input
-                type='text'
-                className='form-control'
-                placeholder='Search...'
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ borderColor: 'black' }}
-              />
-            </div>
-          </div>
+          {filtrarPizzas.length > 0 && (
+            <>
+              <div className='d-flex justify-content-end mb-3'>
+                <div className="input-group w-auto">
+                  <input
+                    type='text'
+                    className='form-control'
+                    placeholder='Search...'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ borderColor: 'black' }}
+                  />
+                </div>
+              </div>
 
-  </>
-)}
+            </>
+          )}
 
         </div>
         <div className='row'>
@@ -225,20 +225,20 @@ const ShowPizzas = () => {
                         .map((pizza, index) => (
                           // Your existing row rendering logic
                           <tr key={pizza.piz_id}>
-                          <td>{(currentPage * recordsPerPage) + index + 1}</td>
-                          <td>{pizza.piz_name}</td>
-                          <td>{pizza.piz_origin}</td>
-                          <td>{pizza.piz_state ? 'True' : 'False'}</td>
-                          <td>
-                            <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-warning'>
-                              <i className='fa-solid fa-edit'></i>
-                            </button>
-                            &nbsp;
-                            <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-danger'>
-                              <i className='fa-solid fa-trash'></i>
-                            </button>
-                          </td>
-                        </tr>
+                            <td>{(currentPage * recordsPerPage) + index + 1}</td>
+                            <td>{pizza.piz_name}</td>
+                            <td>{pizza.piz_origin}</td>
+                            <td>{pizza.piz_state ? 'True' : 'False'}</td>
+                            <td>
+                              <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-warning'>
+                                <i className='fa-solid fa-edit'></i>
+                              </button>
+                              &nbsp;
+                              <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-danger'>
+                                <i className='fa-solid fa-trash'></i>
+                              </button>
+                            </td>
+                          </tr>
                         ))
                     ) : (
                       <tr>
@@ -253,27 +253,27 @@ const ShowPizzas = () => {
         </div>
         <div className='row'>
           <div className='col-12 d-flex justify-content-center'>
-          {pageCount > 0 && (
-            <ReactPaginate
-              previousLabel={'Anterior'}
-              nextLabel={'Siguiente'}
-              breakLabel={'...'}
-              pageCount={pageCount}
-              onPageChange={handlePageClick}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={5}
-              containerClassName={'pagination'}
-              pageClassName={'page-item'}
-              pageLinkClassName={'page-link'}
-              previousClassName={'page-item'}
-              previousLinkClassName={'page-link'}
-              nextClassName={'page-item'}
-              nextLinkClassName={'page-link'}
-              breakClassName={'page-item'}
-              breakLinkClassName={'page-link'}
-              activeClassName={'active'}
-            />
-          )}
+            {pageCount > 0 && (
+              <ReactPaginate
+                previousLabel={'Anterior'}
+                nextLabel={'Siguiente'}
+                breakLabel={'...'}
+                pageCount={pageCount}
+                onPageChange={handlePageClick}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                containerClassName={'pagination'}
+                pageClassName={'page-item'}
+                pageLinkClassName={'page-link'}
+                previousClassName={'page-item'}
+                previousLinkClassName={'page-link'}
+                nextClassName={'page-item'}
+                nextLinkClassName={'page-link'}
+                breakClassName={'page-item'}
+                breakLinkClassName={'page-link'}
+                activeClassName={'active'}
+              />
+            )}
           </div>
         </div>
         <div className='row'>
