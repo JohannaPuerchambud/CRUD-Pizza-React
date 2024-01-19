@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import ReactPaginate from 'react-paginate';
@@ -18,7 +18,7 @@ const ShowPizzas = () => {
   const [piz_id, setId] = useState('');
   const [piz_name, setName] = useState('');
   const [piz_origin, setOrigin] = useState('');
-  const [piz_state, setState] = useState(true);
+  const [piz_state, setState] = useState('');
   const [operation, setOperation] = useState(1);
   const [title, setTitle] = useState('');
   const [pageCount, setPageCount] = useState(0);
@@ -27,6 +27,7 @@ const ShowPizzas = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [entriesToShow, setEntriesToShow] = useState(5);
   const [error, setError] = useState(null); // New state for tracking errors
+  const inputRef = useRef(null);
   // Corrected handleChange for piz_state to properly store the selected value
   const handleStateChange = (e) => {
     setState(e.target.value === 'true'); // Changed to directly set boolean value
@@ -44,7 +45,11 @@ const ShowPizzas = () => {
     setRecordsPerPage(newEntriesToShow);
   };
 
-
+  useEffect(() => {
+    if (modalIsOpen) {
+      inputRef.current?.focus();
+    }
+  }, [modalIsOpen]);
   useEffect(() => {
     const filteredResults = searchTerm
       ? pizzas.filter(pizza =>
@@ -71,11 +76,10 @@ const ShowPizzas = () => {
     getPizzas();
   }, [getPizzas]);
   const openModal = (op, piz_id = '', piz_name = '', piz_origin = '', piz_state = '') => {
-    // Set the states with the provided values or default to empty strings
     setId(piz_id);
     setName(piz_name);
     setOrigin(piz_origin);
-    setState(piz_state);
+    setState(op === 1 ? '' : piz_state); // Set to empty string if adding a new pizza
     setOperation(op);
     setIsOpen(true);
     setTitle(op === 1 ? 'Registrar pizza' : 'Editar pizza');
@@ -148,8 +152,14 @@ const ShowPizzas = () => {
 
     enviarSolicitud(operation === 1 ? 'POST' : 'PUT', parametros)
       .then(() => {
-        closeModal();
-        getPizzas(); // Refresh the pizza list instead of reloading the page
+        closeModal(); // Close the modal after the request is successful
+        getPizzas(); // Refresh the pizza list
+        window.location.reload(); // Add this line to reload the page
+      })
+      .catch((error) => {
+        // Handle any errors here
+        console.error("Error in handleFormSubmit:", error);
+        // Optionally, you can choose not to close the modal in case of an error
       });
   };
   const deletePizza = (piz_id, piz_name) => {
@@ -210,7 +220,7 @@ const ShowPizzas = () => {
           )}
 
         </div>
-        <div className='row'>
+        <div className='row mt-3'>
           <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
             <div className='table-responsive'>
               <table className='table table-bordered'>
@@ -297,117 +307,40 @@ const ShowPizzas = () => {
       </div>
       <div id='modalpizzas' className='modal fade' aria-hidden='true'>
         <div className='modal-dialog'>
-          <Modal
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
-            contentLabel="Pizza Modal"
-            className="Modal"
-            overlayClassName="Overlay"
-          >
-            <div className='modal-content'>
-              <div className='modal-header'>
-                <label className='h5'>{title}</label>
-                <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-              </div>
-              <div className='modal-body'>
-                <input type='hidden' id='piz_id' value={piz_id}></input>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
-                  <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                    onChange={handleNameChange}></input>
-                </div>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                  <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
-                    onChange={(e) => setOrigin(e.target.value)}></input>
-                </div>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
-                  <select
-                    id='piz_state'
-                    className='form-control'
-                    value={piz_state ? "true" : "false"}
-                    onChange={handleStateChange}
-                  >
-                    <option value="" disabled>- Seleccione el estado -</option> {/* Opción por defecto */}
-                    <option value="true">True</option>
-                    <option value="false">False</option>
-                  </select>
-                </div>
-                <div className='d-grid col-6 mx-auto'>
-                  <button onClick={handleFormSubmit} className='btn btn-success'>
-                    <i className='fa-solid fa-floppy-disk'></i> Guardar
-                  </button>
-                </div>
-              </div>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <label className='h5'>{title}</label>
+              <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
-          </Modal>
-
-          <div className='row'>
-            <div className='col-12 d-flex justify-content-center'>
-              <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
-              <select
-                id="entriesToShow"
-                className='form-select'
-                style={{ width: 'auto' }}
-                value={entriesToShow}
-                onChange={handleEntriesChange}
-              >
-                <option value="1">1</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="10">15</option>
-                {/* Agregar más opciones de ser necesario */}
-              </select>
-              <span className="ms-2 align-self-center">entradas</span>
-            </div>
-          </div>
-        </div>
-        <div id='modalpizzas' className='modal fade' aria-hidden='true'>
-          <div className='modal-dialog'>
-            <div className='modal-content'>
-              <div className='modal-header'>
-                <label className='h5'>{title}</label>
-                <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            <div className='modal-body'>
+              <input type="hidden" id="id" ></input>
+              <div className='input-group mb-3'>
+                <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
+                <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
+                  onChange={handleNameChange}></input>
               </div>
-              <div className='modal-body'>
-                <input type='hidden' id='piz_id'></input>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-hashtag'></i></span>
-                  <input type='text' id='piz_id' className='form-control' placeholder='Id' value={piz_id}
-                    onChange={(e) => setId(e.target.value)}></input>
-                </div>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
-                  <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                    onChange={(e) => setName(e.target.value)}></input>
-                </div>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                  <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
-                    onChange={(e) => setOrigin(e.target.value)}></input>
-                </div>
-                <div className='input-group mb-3'>
-                  <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
-                  <select
-                    id='piz_state'
-                    className='form-control'
-                    value={piz_state}
-                    onChange={(e) => setState(e.target.value === 'true')}
-                  >
-                    <option value="" disabled>- Seleccione el estado -</option> {/* Opción por defecto */}
-                    <option value="true">True</option>
-                    <option value="false">False</option>
-                  </select>
-                </div>
-                <div className='d-grid col-6 mx-auto'>
-                  <button onClick={handleFormSubmit} className='btn btn-success'>
-                    <i className='fa-solid fa-floppy-disk'></i> Guardar
-                  </button>
-                </div>
+              <div className='input-group mb-3'>
+                <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
+                <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
+                  onChange={(e) => setOrigin(e.target.value)}></input>
               </div>
-              <div className='modal-footer'>
-                <button type='button' id='btnCerrar' onClick={closeModal} className='btn btn-secondary'>Cerrar</button>
+              <div className='input-group mb-3'>
+                <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
+                <select
+                  id='piz_state'
+                  className='form-control'
+                  value={piz_state}
+                  onChange={handleStateChange}
+                >
+                  <option value="" disabled>- Seleccione el estado -</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>
+              <div className='d-grid col-6 mx-auto'>
+                <button onClick={handleFormSubmit} className='btn btn-success'>
+                  <i className='fa-solid fa-floppy-disk'></i> Guardar
+                </button>
               </div>
             </div>
           </div>
