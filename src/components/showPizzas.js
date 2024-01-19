@@ -240,12 +240,12 @@ const ShowPizzas = () => {
                             <td>{pizza.piz_origin}</td>
                             <td>{pizza.piz_state ? 'True' : 'False'}</td>
                             <td>
-                              <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-warning'
+                              <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-success'
                               data-bs-toggle='modal' data-bs-target='#modalpizzas'>
                                 <i className='fa-solid fa-edit'></i>
                               </button>
                               &nbsp;
-                              <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-danger'>
+                              <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-info'>
                                 <i className='fa-solid fa-trash'></i>
                               </button>
                             </td>
