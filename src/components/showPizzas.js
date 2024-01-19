@@ -107,11 +107,14 @@ const ShowPizzas = () => {
     if (!piz_name.trim()) {
       showAlert('Escribe el nombre de la pizza', 'warning');
       error = true;
+      return;
     }
+    if (!piz_origin.trim()) {
     if (!piz_origin.trim()) {
       showAlert('Escribe el origen de la pizza', 'warning');
       error = true;
     }
+    if (piz_state !== true && piz_state !== false) {
     if (piz_state !== true && piz_state !== false) {
       showAlert('Escribe el estado de la pizza', 'warning');
       error = true;
@@ -173,9 +176,11 @@ const ShowPizzas = () => {
       console.error("Error in enviarSolicitud:", error);
     }
   }
-
-  const deletePizza = (piz_id, piz_name) => {
-    // ...
+  const deletePizza = (id, name) => {
+    if (!id) {
+      showAlert('Id no valido para eliminacion', 'error');
+    }
+    const MySwal = withReactContent(Swal);
     MySwal.fire({
       title: `¿Seguro de eliminar el producto ${piz_name}?`,
       icon: 'question',
