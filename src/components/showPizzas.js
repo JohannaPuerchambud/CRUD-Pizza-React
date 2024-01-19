@@ -50,16 +50,17 @@ const ShowPizzas = () => {
       inputRef.current?.focus();
     }
   }, [modalIsOpen]);
+  
   useEffect(() => {
     const filteredResults = searchTerm
       ? pizzas.filter(pizza =>
-        pizza.piz_name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+          pizza.piz_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pizza.piz_origin.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       : pizzas;
     setFiltrarPizzas(filteredResults);
     setPageCount(Math.ceil(filteredResults.length / recordsPerPage));
-  }, [searchTerm, pizzas, recordsPerPage]);
-
+  }, [searchTerm, pizzas, recordsPerPage]);  
 
   const getPizzas = useCallback(async () => {
     try {
@@ -197,7 +198,7 @@ const ShowPizzas = () => {
               <i className='fa-solid fa-circle-plus'></i> Añadir
             </button>
           </div>
-          <div />
+          <div/>
         </div>
         <div className='col-lg-6'></div>
         <div className='col-lg-8 offset-lg-2'>
@@ -241,7 +242,7 @@ const ShowPizzas = () => {
                             <td>{pizza.piz_state ? 'True' : 'False'}</td>
                             <td>
                               <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-success'
-                              data-bs-toggle='modal' data-bs-target='#modalpizzas'>
+                                data-bs-toggle='modal' data-bs-target='#modalpizzas'>
                                 <i className='fa-solid fa-edit'></i>
                               </button>
                               &nbsp;
@@ -316,17 +317,22 @@ const ShowPizzas = () => {
             <div className='modal-body'>
               <input type="hidden" id="id" ></input>
               <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
+                <span className='input-group-text'><i className='fa-solid fa-hashtag'></i></span>
+                <input type='text' id='piz_id' className='form-control' placeholder='Id pizza' value={piz_id}
+                  onChange={(e) => setId(e.target.value)} disabled></input>
+              </div>
+              <div className='input-group mb-3'>
+                <span className='input-group-text'><i className='fa-solid fa-pizza-slice'></i></span>
                 <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
                   onChange={handleNameChange}></input>
               </div>
               <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
+                <span className='input-group-text'><i className='fa-solid fa-earth-americas'></i></span>
                 <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
                   onChange={(e) => setOrigin(e.target.value)}></input>
               </div>
               <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
+                <span className='input-group-text'><i className='fa-solid fa-list-ul'></i></span>
                 <select
                   id='piz_state'
                   className='form-control'
@@ -343,6 +349,9 @@ const ShowPizzas = () => {
                   <i className='fa-solid fa-floppy-disk'></i> Guardar
                 </button>
               </div>
+            </div>
+            <div className='modal-footer'>
+              <button type='button' id='btnCerrar' className='btn btn-danger' data-bs-dismiss='modal'>Cerrar</button>
             </div>
           </div>
         </div>
