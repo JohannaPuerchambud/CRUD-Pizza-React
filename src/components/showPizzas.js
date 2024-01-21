@@ -3,13 +3,13 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import ReactPaginate from 'react-paginate';
 import Swal from 'sweetalert2';
-import logo from './imagenes/logo1.jpg';
 import { showAlert } from '../functions';
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
 />
 Modal.setAppElement('#root');
+
 const ShowPizzas = () => {
   const url = 'http://localhost:3000/pizzas';
   const [pizzas, setPizzas] = useState([]);
@@ -73,9 +73,11 @@ const ShowPizzas = () => {
       setError(error.toString());
     }
   }, [url, recordsPerPage]);
+
   useEffect(() => {
     getPizzas();
   }, [getPizzas]);
+
   const openModal = (op, piz_id = '', piz_name = '', piz_origin = '', piz_state = '') => {
     setId(piz_id);
     setName(piz_name);
@@ -185,27 +187,6 @@ const ShowPizzas = () => {
   }
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="#">
-          <img src={logo} alt="Logo" style={{ width: '75px', height: 'auto' }} />
-          Pizzería
-          </a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">Pizzas</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Ingredientes</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
       <div className='App'>
         {error && <div className="alert alert-danger">Error: {error}</div>} { }
         <div className='container-fluid'>
