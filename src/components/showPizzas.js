@@ -3,7 +3,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import ReactPaginate from 'react-paginate';
 import Swal from 'sweetalert2';
-import logo from './imagenes/logo.jpg';
+import logo from './imagenes/logo1.jpg';
 import { showAlert } from '../functions';
 <link
   rel="stylesheet"
@@ -187,8 +187,9 @@ const ShowPizzas = () => {
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">Pizzería
-          <img src={logo} alt="Logo" style={{ width: '100px', height: 'auto' }} />
+          <a className="navbar-brand" href="#">
+          <img src={logo} alt="Logo" style={{ width: '75px', height: 'auto' }} />
+          Pizzería
           </a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
