@@ -228,8 +228,8 @@ const ShowIngredientes = () => {
     return (
         <>
             <div>
-                <button onClick={handleExport} class="btn btn-primary">
-                <i class="fa-solid fa-print"></i>Exportar</button>
+                <button onClick={handleExport} className="btn btn-primary">
+                <i className="fa-solid fa-print"></i>Exportar</button>
                 <select onChange={handleExportTypeChange} value={exportType}>
                     <option value="pdf">Exportar a PDF</option>
                     <option value="xml">Exportar a XML</option>
@@ -374,12 +374,12 @@ const ShowIngredientes = () => {
                                             onChange={(e) => setIngId(e.target.value)} disabled></input>
                                     </div>
                                     <div className='input-group mb-3'>
-                                        <span className='input-group-text'><i class="fa-solid fa-utensils"></i></span>
+                                        <span className='input-group-text'><i className="fa-solid fa-utensils"></i></span>
                                         <input type='text' id='ing_name' className='form-control' placeholder='Nombre ingrediente' value={ing_name}
                                             onChange={handleNameChange}></input>
                                     </div>
                                     <div className='input-group mb-3'>
-                                        <span className='input-group-text'><i class="fa-solid fa-fire"></i></span>
+                                        <span className='input-group-text'><i className="fa-solid fa-fire"></i></span>
                                         <input type='text' id='ing_calories' className='form-control' placeholder='Calorias' value={ing_calories}
                                             onChange={(e) => setIngCalories(e.target.value)}></input>
                                     </div>
