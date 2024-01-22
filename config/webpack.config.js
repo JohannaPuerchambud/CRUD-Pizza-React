@@ -335,6 +335,9 @@ module.exports = function (webpackEnv) {
           babelRuntimeRegenerator,
         ]),
       ],
+      fallback: {
+        "fs": false, // Add this line
+      },
     },
     module: {
       strictExportPresence: true,

@@ -4,34 +4,119 @@ import Modal from 'react-modal';
 import ReactPaginate from 'react-paginate';
 import Swal from 'sweetalert2';
 import { showAlert } from '../functions';
-//import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 
-// Create styles
-// const styles = StyleSheet.create({
-//   page: {
-//     flexDirection: 'row',
-//     backgroundColor: '#E4E4E4'
-//   },
-//   section: {
-//     margin: 10,
-//     padding: 10,
-//     flexGrow: 1
-//   }
-// });
+const pdfStyles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    fontFamily: 'Helvetica',
+  },
+  section: {
+    margin: 10,
+    padding: 5,
+    flexGrow: 0, // Do not allow this section to grow
+  },
+  title: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  table: {
+    display: 'table',
+    width: 'auto',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+    marginTop: 10, // Add some spacing between the title and the table
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderBottomWidth: 1,
+    alignItems: 'center',
+    height: 24, // Set a fixed height for table rows
+    fontStyle: 'bold',
+  },
+  tableColHeader: {
+    width: '25%',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderBottomColor: '#000',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    backgroundColor: '#ededed', // Use a different color for header
+  },
+  tableCol: {
+    width: '25%',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
+  tableCellHeader: {
+    margin: 'auto',
+    fontSize: 12,
+  },
+  tableCell: {
+    margin: 'auto',
+    fontSize: 10,
+  },
+});
 
-// // Create Document Component
-// const MyDocument = () => (
-//   <Document>
-//     <Page size="A4" style={styles.page}>
-//       <View style={styles.section}>
-//         <Text>Section #1</Text>
-//       </View>
-//       <View style={styles.section}>
-//         <Text>Section #2</Text>
-//       </View>
-//     </Page>
-//   </Document>
-// );
+// Create Document Component
+const MyPDFDocument = ({ pizzas }) => (
+  <Document>
+    <Page size="A4" style={pdfStyles.page}>
+      <View style={pdfStyles.section}>
+        <Text>Administración de Pizzas</Text>
+      </View>
+      <View style={pdfStyles.table}> 
+        {/* Table Header */}
+        <View style={pdfStyles.tableRow}>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>ID</Text>
+          </View>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>NOMBRE</Text>
+          </View>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>ORIGEN</Text>
+          </View>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>ESTADO</Text>
+          </View>
+          {/* More headers... */}
+        </View>
+        {/* Table Rows */}
+        {pizzas.map((pizza, index) => (
+          <View key={index} style={pdfStyles.tableRow}>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_id}</Text>
+            </View>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_name}</Text>
+            </View>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_origin}</Text>
+            </View>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_state.toString()}</Text>
+            </View>
+            {/* More columns... */}
+          </View>
+        ))}
+      </View>
+    </Page>
+  </Document>
+);
+
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -324,13 +409,14 @@ const ShowPizzas = () => {
   
   return (
     <>
-    {/* <div>
-    <PDFDownloadLink document={<MyDocument />} fileName="somename.pdf">
-      {({ blob, url, loading, error }) =>
-        loading ? 'Loading document...' : 'Download now!'
-      }
-    </PDFDownloadLink>
-  </div> */}
+    <PDFDownloadLink
+  document={<MyPDFDocument pizzas={pizzas} />}
+  fileName="pizzas.pdf"
+>
+  {({ blob, url, loading, error }) =>
+    loading ? 'Loading document...' : 'Download PDF'
+  }
+</PDFDownloadLink>
       <div className='App'>
         {error && <div className="alert alert-danger">Error: {error}</div>} { }
         <div className='container-fluid'>
