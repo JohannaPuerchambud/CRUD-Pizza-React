@@ -12,7 +12,7 @@ import { showAlert } from '../functions';
 Modal.setAppElement('#root');
 function getSubstringUntilFirstMatch(str, match) {
   const index = str.indexOf(match);
-  if (str != "Editar" && str.substring(0, index) != "Editar") {
+  if (str !== "Editar" && str.substring(0, index) !== "Editar") {
     return "Asignar";
   }
   if (index === -1) {
@@ -21,10 +21,9 @@ function getSubstringUntilFirstMatch(str, match) {
   return str.substring(0, index);
 }
 const ShowPizzas = () => {
-  let url = 'http://localhost:3000/';
-  const apiUrl = 'http://localhost:3000';
-  let url_pizzas = url + "pizzas";
-  let url_ingredients = url + "ingredients";
+  let url = 'http://localhost:3000';
+  let url_pizzas = url + "/pizzas";
+  let url_ingredients = url + "/pizzaIngredients";
   let selected_ingredients = JSON.parse(localStorage.getItem("ingredients_selected")) || [];
   const [pizzas, setPizzas] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,11 +73,11 @@ const ShowPizzas = () => {
     }));
   };
   const getPizzas = useCallback(() => {
-    fetchData(`${apiUrl}/pizzas`, setPizzas);
+    fetchData(`${url_pizzas}`, setPizzas);
   }, [fetchData]);
 
   const getIngredients = useCallback(() => {
-    fetchData(`${apiUrl}/ingredients`, setIngredients);
+    fetchData(`${url_ingredients}`, setIngredients);
   }, [fetchData]);
 
   const handleNameChange = (e) => {
@@ -124,9 +123,9 @@ const ShowPizzas = () => {
   useEffect(() => {
     if (modalIsOpen && operation === 2 && piz_id) {
       // Fetch ingredients for the current pizza only if we have a valid piz_id
-      fetchData(`${apiUrl}/ingredients/${piz_id}`, setSelectedIngredients);
+      fetchData(`${url_ingredients}/${piz_id}`, setSelectedIngredients);
     }
-  }, [modalIsOpen, operation, piz_id, apiUrl]);
+  }, [modalIsOpen, operation, piz_id, url]);
 
 
   const handlePageClick = (event) => setCurrentPage(event.selected);
@@ -145,8 +144,8 @@ const ShowPizzas = () => {
 
 
   useEffect(() => {
-    fetchData(`${apiUrl}/pizzas`, setPizzas);
-    fetchData(`${apiUrl}/ingredients`, setIngredients);
+    fetchData(`${url_pizzas}`, setPizzas);
+    fetchData(`${url_ingredients}`, setIngredients);
   }, [fetchData]); // Removed getPizzas and getIngredients from the dependencies array
 
   useEffect(() => {
@@ -174,7 +173,7 @@ const ShowPizzas = () => {
       document.getElementById('piz_name').focus();
     }, 500);
     if (op === 2 && piz_id) {
-      fetchData(`${apiUrl}/ingredients/${piz_id}`, setSelectedIngredients)
+      fetchData(`${url_ingredients}/${piz_id}`, setSelectedIngredients)
         .catch((error) => {
           console.error("Error fetching pizza ingredients:", error);
           // Display the error message to the user
@@ -205,7 +204,7 @@ const ShowPizzas = () => {
       const queryString = new URLSearchParams({
         pizza: JSON.stringify([parametros])
       }).toString();
-      const endpoint = url + tipo_registros + '?' + queryString;
+      const endpoint = url + "/"+tipo_registros + '?' + queryString;
       let config = {
         method: metodo,
         url: endpoint,
