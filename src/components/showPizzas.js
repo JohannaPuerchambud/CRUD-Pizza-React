@@ -413,9 +413,20 @@ const ShowPizzas = () => {
         document={<MyPDFDocument pizzas={pizzas} />}
         fileName="pizzas.pdf"
       >
-        {({ blob, url, loading, error }) =>
-          loading ? 'Loading document...' : 'Download PDF'
-        }
+        {({ blob, url, loading, error }) => {
+          if (loading) {
+            return <button disabled>Loading document...</button>;
+          } else if (error) {
+            return <div>Error al cargar el documento: {error.message}</div>;
+          } else {
+            return (
+              <a href={url} download="document.pdf">
+                <button>Descargar PDF</button>
+              </a>
+            );
+          }
+        }}
+
       </PDFDownloadLink>
       <div className='App'>
         {error && <div className="alert alert-danger">Error: {error}</div>} { }

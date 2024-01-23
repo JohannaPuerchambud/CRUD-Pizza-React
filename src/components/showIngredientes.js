@@ -5,6 +5,119 @@ import ReactPaginate from 'react-paginate';
 import Swal from 'sweetalert2';
 import { showAlert } from '../functions';
 import { Link } from 'react-router-dom';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+
+
+const pdfStyles = StyleSheet.create({
+    page: {
+      flexDirection: 'column',
+      backgroundColor: '#FFFFFF',
+      padding: 10,
+      fontFamily: 'Helvetica',
+    },
+    section: {
+      margin: 10,
+      padding: 5,
+      flexGrow: 0, // Do not allow this section to grow
+    },
+    title: {
+      fontSize: 18,
+      textAlign: 'center',
+      marginBottom: 10,
+    },
+    table: {
+      display: 'table',
+      width: 'auto',
+      borderStyle: 'solid',
+      borderColor: '#bfbfbf',
+      borderWidth: 1,
+      borderRightWidth: 0,
+      borderBottomWidth: 0,
+      marginTop: 10, // Add some spacing between the title and the table
+    },
+    tableRow: {
+      flexDirection: 'row',
+      borderStyle: 'solid',
+      borderColor: '#bfbfbf',
+      borderBottomWidth: 1,
+      alignItems: 'center',
+      height: 24, // Set a fixed height for table rows
+      fontStyle: 'bold',
+    },
+    tableColHeader: {
+      width: '25%',
+      borderStyle: 'solid',
+      borderColor: '#bfbfbf',
+      borderBottomColor: '#000',
+      borderWidth: 1,
+      borderLeftWidth: 0,
+      borderTopWidth: 0,
+      backgroundColor: '#ededed', // Use a different color for header
+    },
+    tableCol: {
+      width: '25%',
+      borderStyle: 'solid',
+      borderColor: '#bfbfbf',
+      borderWidth: 1,
+      borderLeftWidth: 0,
+      borderTopWidth: 0,
+    },
+    tableCellHeader: {
+      margin: 'auto',
+      fontSize: 12,
+    },
+    tableCell: {
+      margin: 'auto',
+      fontSize: 10,
+    },
+  });
+  
+  // Create Document Component
+  const MyPDFDocument = ({ ingredientes }) => (
+    <Document>
+      <Page size="A4" style={pdfStyles.page}>
+        <View style={pdfStyles.section}>
+          <Text>Administración de Ingredientes</Text>
+        </View>
+        <View style={pdfStyles.table}>
+          {/* Table Header */}
+          <View style={pdfStyles.tableRow}>
+            <View style={pdfStyles.tableColHeader}>
+              <Text style={pdfStyles.tableCellHeader}>ID</Text>
+            </View>
+            <View style={pdfStyles.tableColHeader}>
+              <Text style={pdfStyles.tableCellHeader}>NOMBRE</Text>
+            </View>
+            <View style={pdfStyles.tableColHeader}>
+              <Text style={pdfStyles.tableCellHeader}>CALORIAS</Text>
+            </View>
+            <View style={pdfStyles.tableColHeader}>
+              <Text style={pdfStyles.tableCellHeader}>ESTADO</Text>
+            </View>
+            {/* More headers... */}
+          </View>
+          {/* Table Rows */}
+          {ingredientes.map((ingrediente, index) => (
+            <View key={index} style={pdfStyles.tableRow}>
+              <View style={pdfStyles.tableCol}>
+                <Text style={pdfStyles.tableCell}>{ingrediente.ing_id}</Text>
+              </View>
+              <View style={pdfStyles.tableCol}>
+                <Text style={pdfStyles.tableCell}>{ingrediente.ing_name}</Text>
+              </View>
+              <View style={pdfStyles.tableCol}>
+                <Text style={pdfStyles.tableCell}>{ingrediente.ing_calories}</Text>
+              </View>
+              <View style={pdfStyles.tableCol}>
+                <Text style={pdfStyles.tableCell}>{ingrediente.ing_state.toString()}</Text>
+              </View>
+              {/* More columns... */}
+            </View>
+          ))}
+        </View>
+      </Page>
+    </Document>
+  );
 
 Modal.setAppElement('#root');
 
@@ -179,7 +292,25 @@ const ShowIngredientes = () => {
 
     return (
         <>
-        
+            <PDFDownloadLink
+                document={<MyPDFDocument ingredientes={ingredientes} />}
+                fileName="ingredientes.pdf"
+            >
+                {({ blob, url, loading, error }) => {
+                    if (loading) {
+                        return <button disabled>Loading document...</button>;
+                    } else if (error) {
+                        return <div>Error al cargar el documento: {error.message}</div>;
+                    } else {
+                        return (
+                            <a href={url} download="document.pdf">
+                                <button>Descargar PDF</button>
+                            </a>
+                        );
+                    }
+                }}
+
+            </PDFDownloadLink>
             <div>
                 <div className='App'>
                     {error && <div className="alert alert-danger">Error: {error}</div>} { }
