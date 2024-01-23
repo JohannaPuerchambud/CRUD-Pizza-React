@@ -177,64 +177,9 @@ const ShowIngredientes = () => {
         });
     }
 
-    //Funciones para Exportar
-
-    const exportToPDF = async () => {
-        try {
-            // Hacer una solicitud al servidor para obtener el PDF
-            const response = await axios.get('/api/export/pdf', { responseType: 'blob' });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'export.pdf');
-            document.body.appendChild(link);
-            link.click();
-        } catch (error) {
-            console.error('Error al exportar a PDF', error);
-        }
-    };
-
-    const exportToXML = async () => {
-        try {
-            // Hacer una solicitud al servidor para obtener el XML
-            const response = await axios.get('/api/export/xml', { responseType: 'blob' });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'export.xml');
-            document.body.appendChild(link);
-            link.click();
-        } catch (error) {
-            console.error('Error al exportar a XML', error);
-        }
-    };
-
-    const [exportType, setExportType] = useState('pdf');
-
-    const handleExportTypeChange = (event) => {
-        setExportType(event.target.value);
-    };
-
-    const handleExport = async () => {
-        if (exportType === 'pdf') {
-            // Lógica para exportar a PDF
-            exportToPDF();
-        } else if (exportType === 'xml') {
-            // Lógica para exportar a XML
-            exportToXML();
-        }
-    };
-
     return (
         <>
-            <div>
-                <button onClick={handleExport} className="btn btn-primary">
-                    <i className="fa-solid fa-print"></i>Exportar</button>
-                <select onChange={handleExportTypeChange} value={exportType}>
-                    <option value="pdf">Exportar a PDF</option>
-                    <option value="xml">Exportar a XML</option>
-                </select>
-            </div>
+        
             <div>
                 <div className='App'>
                     {error && <div className="alert alert-danger">Error: {error}</div>} { }
