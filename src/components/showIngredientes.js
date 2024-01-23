@@ -229,7 +229,7 @@ const ShowIngredientes = () => {
         <>
             <div>
                 <button onClick={handleExport} className="btn btn-primary">
-                <i className="fa-solid fa-print"></i>Exportar</button>
+                    <i className="fa-solid fa-print"></i>Exportar</button>
                 <select onChange={handleExportTypeChange} value={exportType}>
                     <option value="pdf">Exportar a PDF</option>
                     <option value="xml">Exportar a XML</option>

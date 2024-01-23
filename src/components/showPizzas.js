@@ -77,7 +77,7 @@ const MyPDFDocument = ({ pizzas }) => (
       <View style={pdfStyles.section}>
         <Text>Administración de Pizzas</Text>
       </View>
-      <View style={pdfStyles.table}> 
+      <View style={pdfStyles.table}>
         {/* Table Header */}
         <View style={pdfStyles.tableRow}>
           <View style={pdfStyles.tableColHeader}>
@@ -254,7 +254,7 @@ const ShowPizzas = () => {
     fetchData(`${url_pizzas}`, setPizzas);
     fetchData(`${url_ingredients}`, setIngredients);
   }, [fetchData]); // Removed getPizzas and getIngredients from the dependencies array
- 
+
   useEffect(() => {
     getPizzas();
   }, [getPizzas]);
@@ -310,7 +310,7 @@ const ShowPizzas = () => {
       const queryString = new URLSearchParams({
         pizza: JSON.stringify([parametros])
       }).toString();
-      const endpoint = url + "/"+tipo_registros + '?' + queryString;
+      const endpoint = url + "/" + tipo_registros + '?' + queryString;
       let config = {
         method: metodo,
         url: endpoint,
@@ -406,17 +406,17 @@ const ShowPizzas = () => {
       }
     });
   }
-  
+
   return (
     <>
-    <PDFDownloadLink
-  document={<MyPDFDocument pizzas={pizzas} />}
-  fileName="pizzas.pdf"
->
-  {({ blob, url, loading, error }) =>
-    loading ? 'Loading document...' : 'Download PDF'
-  }
-</PDFDownloadLink>
+      <PDFDownloadLink
+        document={<MyPDFDocument pizzas={pizzas} />}
+        fileName="pizzas.pdf"
+      >
+        {({ blob, url, loading, error }) =>
+          loading ? 'Loading document...' : 'Download PDF'
+        }
+      </PDFDownloadLink>
       <div className='App'>
         {error && <div className="alert alert-danger">Error: {error}</div>} { }
         <div className='container-fluid'>
@@ -579,10 +579,10 @@ const ShowPizzas = () => {
                   </select>
                 </div>
                 <div className='input-group mb-3 d-flex justify-content-center'>
-                <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
-                  <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
-                </button>
-              </div>
+                  <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
+                    <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
+                  </button>
+                </div>
                 <div className='d-grid col-6 mx-auto'>
                   <button onClick={handleFormSubmitPizzas} className='btn btn-success'>
                     <i className='fa-solid fa-floppy-disk'></i> Guardar
@@ -596,105 +596,105 @@ const ShowPizzas = () => {
           </div>
         </div>
         <div id='modalpizzas2' className='modal fade' aria-hidden='true'>
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <div className='modal-header d-flex justify-content-between'>
-              <label className='h5 text-center' style={{ flex: 1 }}>{title}</label>
-              <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div className='modal-body'>
-              <input type="hidden" id="id" ></input>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
-                <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                  onChange={handleNameChange}></input>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header d-flex justify-content-between'>
+                <label className='h5 text-center' style={{ flex: 1 }}>{title}</label>
+                <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
               </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
-                  onChange={(e) => setOrigin(e.target.value)}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
-                <select
-                  id='piz_state'
-                  className='form-control'
-                  value={piz_state}
-                  onChange={handleStateChange}
-                >
-                  <option value="" disabled>- Seleccione el estado -</option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-              <div className='input-group mb-3 d-flex justify-content-center'>
-                <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
-                  <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
-                </button>
-              </div>
-              <div className='table-responsive'>
-                <table className='table table-bordered'>
-                  <thead className='thead-dark'>
-                    <tr>
-                      <th className="text-center">SELECCIONAR</th>
-                      <th className="text-center">NOMBRE</th>
-                      <th className="text-center">CALORÍAS</th>
-                      <th className="text-center">ESTADO</th>
-                      <th className="text-center">PORCION</th>
-                    </tr>
-                  </thead>
-                  <tbody className='table-group-divider'>
-                    {ingredients.length > 0 ? (
-                      ingredients.map((ingredient, index) => {
-                        const selectedIngredient = selectedIngredients.find(selIng => selIng.ing_id === ingredient.ing_id);
-                        return (
-                          <tr key={`${ingredient.ing_id}-${index}`}>
-                            <td className="text-center align-middle">
-                              <div className="checkbox">
-                                <label className='d-flex justify-content-center align-items-center'>
-                                  <input
-                                    className="text-center align-middle"
-                                    type="checkbox"
-                                    style={{ width: '18px', height: '18px' }}
-                                    onChange={() => handleCheckboxChange(ingredient.ing_id)}
-                                    checked={checkboxStates[ingredient.ing_id] || false}
-                                  />
-                                </label>
-                              </div>
-                            </td>
-                            <td className="text-center align-middle">{ingredient.ing_name}</td>
-                            <td className="text-center align-middle">{ingredient.ing_calories}</td>
-                            <td className="text-center align-middle">{ingredient.ing_state ? 'True' : 'False'}</td>
-                            <td className="text-center align-middle">
-                              <input
-                                type='text'
-                                className='form-control'
-                                value={portionStates[ingredient.ing_id] || ''}
-                                onChange={(e) => handlePortionChange(ingredient.ing_id, e.target.value)}
-                              />
-
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
+              <div className='modal-body'>
+                <input type="hidden" id="id" ></input>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
+                  <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
+                    onChange={handleNameChange}></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
+                  <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
+                    onChange={(e) => setOrigin(e.target.value)}></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
+                  <select
+                    id='piz_state'
+                    className='form-control'
+                    value={piz_state}
+                    onChange={handleStateChange}
+                  >
+                    <option value="" disabled>- Seleccione el estado -</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+                <div className='input-group mb-3 d-flex justify-content-center'>
+                  <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
+                    <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
+                  </button>
+                </div>
+                <div className='table-responsive'>
+                  <table className='table table-bordered'>
+                    <thead className='thead-dark'>
                       <tr>
-                        <td colSpan="5" className="text-center">No hay ingredientes para mostrar</td>
+                        <th className="text-center">SELECCIONAR</th>
+                        <th className="text-center">NOMBRE</th>
+                        <th className="text-center">CALORÍAS</th>
+                        <th className="text-center">ESTADO</th>
+                        <th className="text-center">PORCION</th>
                       </tr>
-                    )}
-                  </tbody>
+                    </thead>
+                    <tbody className='table-group-divider'>
+                      {ingredients.length > 0 ? (
+                        ingredients.map((ingredient, index) => {
+                          const selectedIngredient = selectedIngredients.find(selIng => selIng.ing_id === ingredient.ing_id);
+                          return (
+                            <tr key={`${ingredient.ing_id}-${index}`}>
+                              <td className="text-center align-middle">
+                                <div className="checkbox">
+                                  <label className='d-flex justify-content-center align-items-center'>
+                                    <input
+                                      className="text-center align-middle"
+                                      type="checkbox"
+                                      style={{ width: '18px', height: '18px' }}
+                                      onChange={() => handleCheckboxChange(ingredient.ing_id)}
+                                      checked={checkboxStates[ingredient.ing_id] || false}
+                                    />
+                                  </label>
+                                </div>
+                              </td>
+                              <td className="text-center align-middle">{ingredient.ing_name}</td>
+                              <td className="text-center align-middle">{ingredient.ing_calories}</td>
+                              <td className="text-center align-middle">{ingredient.ing_state ? 'True' : 'False'}</td>
+                              <td className="text-center align-middle">
+                                <input
+                                  type='text'
+                                  className='form-control'
+                                  value={portionStates[ingredient.ing_id] || ''}
+                                  onChange={(e) => handlePortionChange(ingredient.ing_id, e.target.value)}
+                                />
 
-                </table>
-              </div>
-              <div className='d-grid col-6 mx-auto'>
-                <button onClick={handleFormSubmitIngredients} className='btn btn-success'>
-                  <i className='fa-solid fa-floppy-disk'></i> Guardar
-                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan="5" className="text-center">No hay ingredientes para mostrar</td>
+                        </tr>
+                      )}
+                    </tbody>
+
+                  </table>
+                </div>
+                <div className='d-grid col-6 mx-auto'>
+                  <button onClick={handleFormSubmitIngredients} className='btn btn-success'>
+                    <i className='fa-solid fa-floppy-disk'></i> Guardar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
     </>
   );
