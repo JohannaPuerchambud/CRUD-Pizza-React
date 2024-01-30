@@ -3,8 +3,120 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import ReactPaginate from 'react-paginate';
 import Swal from 'sweetalert2';
-// Removed unused withReactContent import
 import { showAlert } from '../functions';
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+
+const pdfStyles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    fontFamily: 'Helvetica',
+  },
+  section: {
+    margin: 10,
+    padding: 5,
+    flexGrow: 0, // Do not allow this section to grow
+  },
+  title: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  table: {
+    display: 'table',
+    width: 'auto',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+    marginTop: 10, // Add some spacing between the title and the table
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderBottomWidth: 1,
+    alignItems: 'center',
+    height: 24, // Set a fixed height for table rows
+    fontStyle: 'bold',
+  },
+  tableColHeader: {
+    width: '25%',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderBottomColor: '#000',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    backgroundColor: '#ededed', // Use a different color for header
+  },
+  tableCol: {
+    width: '25%',
+    borderStyle: 'solid',
+    borderColor: '#bfbfbf',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
+  tableCellHeader: {
+    margin: 'auto',
+    fontSize: 12,
+  },
+  tableCell: {
+    margin: 'auto',
+    fontSize: 10,
+  },
+});
+
+// Create Document Component
+const MyPDFDocument = ({ pizzas }) => (
+  <Document>
+    <Page size="A4" style={pdfStyles.page}>
+      <View style={pdfStyles.section}>
+        <Text>Administración de Pizzas</Text>
+      </View>
+      <View style={pdfStyles.table}>
+        {/* Table Header */}
+        <View style={pdfStyles.tableRow}>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>ID</Text>
+          </View>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>NOMBRE</Text>
+          </View>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>ORIGEN</Text>
+          </View>
+          <View style={pdfStyles.tableColHeader}>
+            <Text style={pdfStyles.tableCellHeader}>ESTADO</Text>
+          </View>
+          {/* More headers... */}
+        </View>
+        {/* Table Rows */}
+        {pizzas.map((pizza, index) => (
+          <View key={index} style={pdfStyles.tableRow}>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_id}</Text>
+            </View>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_name}</Text>
+            </View>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_origin}</Text>
+            </View>
+            <View style={pdfStyles.tableCol}>
+              <Text style={pdfStyles.tableCell}>{pizza.piz_state.toString()}</Text>
+            </View>
+            {/* More columns... */}
+          </View>
+        ))}
+      </View>
+    </Page>
+  </Document>
+);
+
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -39,7 +151,6 @@ const ShowPizzas = () => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [entriesToShow, setEntriesToShow] = useState(5);
   const [error, setError] = useState(null); // New state for tracking errors
-
   const [ingredients, setIngredients] = useState([]);
   const [ing_name, setIngName] = useState('');
   const [ing_calories, setIngCalories] = useState('');
@@ -49,7 +160,6 @@ const ShowPizzas = () => {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [checkboxStates, setCheckboxStates] = useState({});
   const [portionStates, setPortionStates] = useState({});
-
   const inputRef = useRef(null);
   const checkboxChangeCalled = useRef(new Set());
 
@@ -79,11 +189,9 @@ const ShowPizzas = () => {
   const getIngredients = useCallback(() => {
     fetchData(`${url_ingredients}`, setIngredients);
   }, [fetchData]);
-
   const handleNameChange = (e) => {
     setName(e.target.value); // Actualizar el estado con el valor del input
   };
-
   const handlePortionChange = (ingredientId, newPortion) => {
     setPortionStates(prevStates => ({
       ...prevStates,
@@ -108,6 +216,7 @@ const ShowPizzas = () => {
     setEntriesToShow(newEntriesToShow);
     setRecordsPerPage(newEntriesToShow);
   };
+
   useEffect(() => {
     const initialCheckboxStates = {};
     const initialPortionStates = {};
@@ -141,8 +250,6 @@ const ShowPizzas = () => {
     setPageCount(Math.ceil(filterData(pizzas).length / recordsPerPage));
   }, [searchTerm, pizzas, recordsPerPage]);
 
-
-
   useEffect(() => {
     fetchData(`${url_pizzas}`, setPizzas);
     fetchData(`${url_ingredients}`, setIngredients);
@@ -151,9 +258,7 @@ const ShowPizzas = () => {
   useEffect(() => {
     getPizzas();
   }, [getPizzas]);
-  useEffect(() => {
-    getIngredients();
-  }, [getIngredients]);
+
   const openModal = async (op, piz_id = '', piz_name = '', piz_origin = '', piz_state = '', ing_name = '', ing_calories = '', ing_state = '', pi_portion = '', ing_id = '') => {
     setId(piz_id);
     setName(piz_name);
@@ -181,6 +286,7 @@ const ShowPizzas = () => {
         });
     }
   };
+
   const closeModal = () => {
     setIsOpen(false); // Close the modal
   };
@@ -204,7 +310,7 @@ const ShowPizzas = () => {
       const queryString = new URLSearchParams({
         pizza: JSON.stringify([parametros])
       }).toString();
-      const endpoint = url + "/"+tipo_registros + '?' + queryString;
+      const endpoint = url + "/" + tipo_registros + '?' + queryString;
       let config = {
         method: metodo,
         url: endpoint,
@@ -221,7 +327,6 @@ const ShowPizzas = () => {
       throw error; // Rethrow the error to be handled by the caller
     }
   };
-
 
   const handleFormSubmitPizzas = async () => {
     if (!validateForm()) return;
@@ -245,7 +350,6 @@ const ShowPizzas = () => {
         // Optionally, you can choose not to close the modal in case of an error
       });
   };
-
   const handleFormSubmitIngredients = async () => {
     if (!validateForm()) return;
 
@@ -282,7 +386,6 @@ const ShowPizzas = () => {
       // Optionally, display an error message to the user
     }
   };
-
   const deletePizza = (piz_id, piz_name) => {
     if (!piz_id) {
       showAlert('Id no valido para eliminacion', 'error');
@@ -303,276 +406,308 @@ const ShowPizzas = () => {
       }
     });
   }
+
   return (
-    <div className='App'>
-      {error && <div className="alert alert-danger">Error: {error}</div>} { }
-      <div className='container-fluid'>
-        <div className='row mb-3'>
-          <div className='col-12'>
-            <h2 className='text-center p-3'>Administración de Pizzas</h2>
+    <>
+      <PDFDownloadLink
+        document={<MyPDFDocument pizzas={pizzas} />}
+        fileName="pizzas.pdf"
+      >
+        {({ blob, url, loading, error }) => {
+          if (loading) {
+            return <button disabled>Loading document...</button>;
+          } else if (error) {
+            return <div>Error al cargar el documento: {error.message}</div>;
+          } else {
+            return (
+              <a href={url} download="document.pdf">
+                <button>Descargar PDF</button>
+              </a>
+            );
+          }
+        }}
+
+      </PDFDownloadLink>
+      <div className='App'>
+        {error && <div className="alert alert-danger">Error: {error}</div>} { }
+        <div className='container-fluid'>
+          <div className='row mb-3'>
+            <div className='col-12'>
+              <h2 className='text-center p-3'>Administración de Pizzas</h2>
+            </div>
           </div>
-        </div>
-        <div className='row mb-3'>
-          <div className='col-12 d-flex justify-content-center'>
-            <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
-              <i className='fa-solid fa-circle-plus'></i> Añadir
-            </button>
+          <div className='row mb-3'>
+            <div className='col-12 d-flex justify-content-center'>
+              <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalpizzas'>
+                <i className='fa-solid fa-circle-plus'></i> Añadir
+              </button>
+            </div>
+            <div />
           </div>
-          <div />
-        </div>
-        <div className='col-lg-6'></div>
-        <div className='col-lg-8 offset-lg-2'>
-          {pizzas.length > 0 && (
-            <>
-              <div className='d-flex justify-content-end mb-3'>
-                <div className="input-group w-auto">
-                  <input
-                    type='text'
-                    className='form-control'
-                    placeholder='Search...'
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ borderColor: 'black' }}
-                  />
+          <div className='col-lg-6'></div>
+          <div className='col-lg-8 offset-lg-2'>
+            {pizzas.length > 0 && (
+              <>
+                <div className='d-flex justify-content-end mb-3'>
+                  <div className="input-group w-auto">
+                    <input
+                      type='text'
+                      className='form-control'
+                      placeholder='Search...'
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{ borderColor: 'black' }}
+                    />
+                  </div>
                 </div>
-              </div>
 
-            </>
-          )}
-
-        </div>
-        <div className='row mt-3'>
-          <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
-            <div className='table-responsive'>
-              <table className='table table-bordered'>
-                <thead className='thead-dark'>
-                  <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
-                </thead>
-                <tbody className='table-group-divider'>
-                  {
-                    pizzas.length > 0 ? (
-                      filterData(pizzas)
-                        .slice(currentPage * recordsPerPage, (currentPage * recordsPerPage) + recordsPerPage)
-                        .map((pizza, index) => (
-                          // Your existing row rendering logic
-                          <tr key={pizza.piz_id}>
-                            <td>{(currentPage * recordsPerPage) + index + 1}</td>
-                            <td>{pizza.piz_name}</td>
-                            <td>{pizza.piz_origin}</td>
-                            <td>{pizza.piz_state ? 'True' : 'False'}</td>
-                            <td>
-                              <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-success'
-                                data-bs-toggle='modal' data-bs-target='#modalpizzas'>
-                                <i className='fa-solid fa-edit'></i>
-                              </button>
-                              &nbsp;
-                              <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-info'>
-                                <i className='fa-solid fa-trash'></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="text-center">No hay pizzas para mostrar</td>
-                      </tr>
-                    )
-                  }
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div className='row'>
-          <div className='col-12 d-flex justify-content-center'>
-            {pageCount > 0 && (
-              <ReactPaginate
-                previousLabel={'Anterior'}
-                nextLabel={'Siguiente'}
-                breakLabel={'...'}
-                pageCount={pageCount}
-                onPageChange={handlePageClick}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                containerClassName={'pagination'}
-                pageClassName={'page-item'}
-                pageLinkClassName={'page-link'}
-                previousClassName={'page-item'}
-                previousLinkClassName={'page-link'}
-                nextClassName={'page-item'}
-                nextLinkClassName={'page-link'}
-                breakClassName={'page-item'}
-                breakLinkClassName={'page-link'}
-                activeClassName={'active'}
-              />
+              </>
             )}
+
           </div>
-        </div>
-        <div className='row'>
-          <div className='col-12 d-flex justify-content-center'>
-            <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
-            <select
-              id="entriesToShow"
-              className='form-select'
-              style={{ width: 'auto' }}
-              value={entriesToShow}
-              onChange={handleEntriesChange}
-            >
-              <option value="1">1</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-            </select>
-            <span className="ms-2 align-self-center">entradas</span>
-          </div>
-        </div>
-      </div>
-      <div id='modalpizzas' className='modal fade' aria-hidden='true'>
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <div className='modal-header d-flex justify-content-between'>
-              <label className='h5 text-center' style={{ flex: 1 }}>{title}</label>
-              <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div className='modal-body'>
-              <input type="hidden" id="id" ></input>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
-                <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                  onChange={handleNameChange}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
-                  onChange={(e) => setOrigin(e.target.value)}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
-                <select
-                  id='piz_state'
-                  className='form-control'
-                  value={piz_state}
-                  onChange={handleStateChange}
-                >
-                  <option value="" disabled>- Seleccione el estado -</option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-              <div className='input-group mb-3 d-flex justify-content-center'>
-                <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
-                  <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
-                </button>
-              </div>
-              <div className='d-grid col-6 mx-auto'>
-                <button onClick={handleFormSubmitPizzas} className='btn btn-success'>
-                  <i className='fa-solid fa-floppy-disk'></i> Guardar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id='modalpizzas2' className='modal fade' aria-hidden='true'>
-        <div className='modal-dialog'>
-          <div className='modal-content'>
-            <div className='modal-header d-flex justify-content-between'>
-              <label className='h5 text-center' style={{ flex: 1 }}>{title}</label>
-              <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div className='modal-body'>
-              <input type="hidden" id="id" ></input>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
-                <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
-                  onChange={handleNameChange}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
-                <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
-                  onChange={(e) => setOrigin(e.target.value)}></input>
-              </div>
-              <div className='input-group mb-3'>
-                <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
-                <select
-                  id='piz_state'
-                  className='form-control'
-                  value={piz_state}
-                  onChange={handleStateChange}
-                >
-                  <option value="" disabled>- Seleccione el estado -</option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-              <div className='input-group mb-3 d-flex justify-content-center'>
-                <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
-                  <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
-                </button>
-              </div>
+          <div className='row mt-3'>
+            <div className='col-12 col-lg-8 offset-0 offset-lg-2'>
               <div className='table-responsive'>
                 <table className='table table-bordered'>
                   <thead className='thead-dark'>
-                    <tr>
-                      <th className="text-center">SELECCIONAR</th>
-                      <th className="text-center">NOMBRE</th>
-                      <th className="text-center">CALORÍAS</th>
-                      <th className="text-center">ESTADO</th>
-                      <th className="text-center">PORCION</th>
-                    </tr>
+                    <tr><th>ID</th><th>NOMBRE</th><th>ORIGEN</th><th>ESTADO</th><th>OPCIONES</th></tr>
                   </thead>
                   <tbody className='table-group-divider'>
-                    {ingredients.length > 0 ? (
-                      ingredients.map((ingredient, index) => {
-                        const selectedIngredient = selectedIngredients.find(selIng => selIng.ing_id === ingredient.ing_id);
-                        return (
-                          <tr key={`${ingredient.ing_id}-${index}`}>
-                            <td className="text-center align-middle">
-                              <div className="checkbox">
-                                <label className='d-flex justify-content-center align-items-center'>
-                                  <input
-                                    className="text-center align-middle"
-                                    type="checkbox"
-                                    style={{ width: '18px', height: '18px' }}
-                                    onChange={() => handleCheckboxChange(ingredient.ing_id)}
-                                    checked={checkboxStates[ingredient.ing_id] || false}
-                                  />
-                                </label>
-                              </div>
-                            </td>
-                            <td className="text-center align-middle">{ingredient.ing_name}</td>
-                            <td className="text-center align-middle">{ingredient.ing_calories}</td>
-                            <td className="text-center align-middle">{ingredient.ing_state ? 'True' : 'False'}</td>
-                            <td className="text-center align-middle">
-                              <input
-                                type='text'
-                                className='form-control'
-                                value={portionStates[ingredient.ing_id] || ''}
-                                onChange={(e) => handlePortionChange(ingredient.ing_id, e.target.value)}
-                              />
-
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="text-center">No hay ingredientes para mostrar</td>
-                      </tr>
-                    )}
+                    {
+                      pizzas.length > 0 ? (
+                        filterData(pizzas)
+                          .slice(currentPage * recordsPerPage, (currentPage * recordsPerPage) + recordsPerPage)
+                          .map((pizza, index) => (
+                            // Your existing row rendering logic
+                            <tr key={pizza.piz_id}>
+                              <td>{(currentPage * recordsPerPage) + index + 1}</td>
+                              <td>{pizza.piz_name}</td>
+                              <td>{pizza.piz_origin}</td>
+                              <td>{pizza.piz_state ? 'True' : 'False'}</td>
+                              <td>
+                                <button onClick={() => openModal(2, pizza.piz_id, pizza.piz_name, pizza.piz_origin, pizza.piz_state)} className='btn btn-success'
+                                  data-bs-toggle='modal' data-bs-target='#modalpizzas'>
+                                  <i className='fa-solid fa-edit'></i>
+                                </button>
+                                &nbsp;
+                                <button onClick={() => deletePizza(pizza.piz_id, pizza.piz_name)} className='btn btn-info'>
+                                  <i className='fa-solid fa-trash'></i>
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                      ) : (
+                        <tr>
+                          <td colSpan="5" className="text-center">No hay pizzas para mostrar</td>
+                        </tr>
+                      )
+                    }
                   </tbody>
-
                 </table>
               </div>
-              <div className='d-grid col-6 mx-auto'>
-                <button onClick={handleFormSubmitIngredients} className='btn btn-success'>
-                  <i className='fa-solid fa-floppy-disk'></i> Guardar
-                </button>
+            </div>
+          </div>
+          <div className='row'>
+            <div className='col-12 d-flex justify-content-center'>
+              {pageCount > 0 && (
+                <ReactPaginate
+                  previousLabel={'Anterior'}
+                  nextLabel={'Siguiente'}
+                  breakLabel={'...'}
+                  pageCount={pageCount}
+                  onPageChange={handlePageClick}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={5}
+                  containerClassName={'pagination'}
+                  pageClassName={'page-item'}
+                  pageLinkClassName={'page-link'}
+                  previousClassName={'page-item'}
+                  previousLinkClassName={'page-link'}
+                  nextClassName={'page-item'}
+                  nextLinkClassName={'page-link'}
+                  breakClassName={'page-item'}
+                  breakLinkClassName={'page-link'}
+                  activeClassName={'active'}
+                />
+              )}
+            </div>
+          </div>
+          <div className='row'>
+            <div className='col-12 d-flex justify-content-center'>
+              <label htmlFor="entriesToShow" className="me-2 align-self-center">Mostrar</label>
+              <select
+                id="entriesToShow"
+                className='form-select'
+                style={{ width: 'auto' }}
+                value={entriesToShow}
+                onChange={handleEntriesChange}
+              >
+                <option value="1">1</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+                <option value="10">10</option>
+              </select>
+              <span className="ms-2 align-self-center">entradas</span>
+            </div>
+          </div>
+        </div>
+        <div id='modalpizzas' className='modal fade' aria-hidden='true'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header d-flex justify-content-between'>
+                <label className='h5 text-center' style={{ flex: 1 }}>{title}</label>
+                <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+              </div>
+              <div className='modal-body'>
+                <input type="hidden" id="id" ></input>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-hashtag'></i></span>
+                  <input type='text' id='piz_id' className='form-control' placeholder='Id pizza' value={piz_id}
+                    onChange={(e) => setId(e.target.value)} disabled></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-pizza-slice'></i></span>
+                  <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
+                    onChange={handleNameChange}></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-earth-americas'></i></span>
+                  <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
+                    onChange={(e) => setOrigin(e.target.value)}></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-list-ul'></i></span>
+                  <select
+                    id='piz_state'
+                    className='form-control'
+                    value={piz_state}
+                    onChange={handleStateChange}
+                  >
+                    <option value="" disabled>- Seleccione el estado -</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+                <div className='input-group mb-3 d-flex justify-content-center'>
+                  <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
+                    <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
+                  </button>
+                </div>
+                <div className='d-grid col-6 mx-auto'>
+                  <button onClick={handleFormSubmitPizzas} className='btn btn-success'>
+                    <i className='fa-solid fa-floppy-disk'></i> Guardar
+                  </button>
+                </div>
+              </div>
+              <div className='modal-footer'>
+                <button type='button' id='btnCerrar' className='btn btn-danger' data-bs-dismiss='modal'>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id='modalpizzas2' className='modal fade' aria-hidden='true'>
+          <div className='modal-dialog'>
+            <div className='modal-content'>
+              <div className='modal-header d-flex justify-content-between'>
+                <label className='h5 text-center' style={{ flex: 1 }}>{title}</label>
+                <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+              </div>
+              <div className='modal-body'>
+                <input type="hidden" id="id" ></input>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-gift'></i></span>
+                  <input type='text' id='piz_name' className='form-control' placeholder='Nombre' value={piz_name}
+                    onChange={handleNameChange}></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-comment'></i></span>
+                  <input type='text' id='piz_origin' className='form-control' placeholder='Origen' value={piz_origin}
+                    onChange={(e) => setOrigin(e.target.value)}></input>
+                </div>
+                <div className='input-group mb-3'>
+                  <span className='input-group-text'><i className='fa-solid fa-clipboard-question'></i></span>
+                  <select
+                    id='piz_state'
+                    className='form-control'
+                    value={piz_state}
+                    onChange={handleStateChange}
+                  >
+                    <option value="" disabled>- Seleccione el estado -</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+                <div className='input-group mb-3 d-flex justify-content-center'>
+                  <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalpizzas2'>
+                    <i className='fa-solid fa-circle-plus'></i> {getSubstringUntilFirstMatch(title, " ")} ingrediente/s
+                  </button>
+                </div>
+                <div className='table-responsive'>
+                  <table className='table table-bordered'>
+                    <thead className='thead-dark'>
+                      <tr>
+                        <th className="text-center">SELECCIONAR</th>
+                        <th className="text-center">NOMBRE</th>
+                        <th className="text-center">CALORÍAS</th>
+                        <th className="text-center">ESTADO</th>
+                        <th className="text-center">PORCION</th>
+                      </tr>
+                    </thead>
+                    <tbody className='table-group-divider'>
+                      {ingredients.length > 0 ? (
+                        ingredients.map((ingredient, index) => {
+                          const selectedIngredient = selectedIngredients.find(selIng => selIng.ing_id === ingredient.ing_id);
+                          return (
+                            <tr key={`${ingredient.ing_id}-${index}`}>
+                              <td className="text-center align-middle">
+                                <div className="checkbox">
+                                  <label className='d-flex justify-content-center align-items-center'>
+                                    <input
+                                      className="text-center align-middle"
+                                      type="checkbox"
+                                      style={{ width: '18px', height: '18px' }}
+                                      onChange={() => handleCheckboxChange(ingredient.ing_id)}
+                                      checked={checkboxStates[ingredient.ing_id] || false}
+                                    />
+                                  </label>
+                                </div>
+                              </td>
+                              <td className="text-center align-middle">{ingredient.ing_name}</td>
+                              <td className="text-center align-middle">{ingredient.ing_calories}</td>
+                              <td className="text-center align-middle">{ingredient.ing_state ? 'True' : 'False'}</td>
+                              <td className="text-center align-middle">
+                                <input
+                                  type='text'
+                                  className='form-control'
+                                  value={portionStates[ingredient.ing_id] || ''}
+                                  onChange={(e) => handlePortionChange(ingredient.ing_id, e.target.value)}
+                                />
+
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan="5" className="text-center">No hay ingredientes para mostrar</td>
+                        </tr>
+                      )}
+                    </tbody>
+
+                  </table>
+                </div>
+                <div className='d-grid col-6 mx-auto'>
+                  <button onClick={handleFormSubmitIngredients} className='btn btn-success'>
+                    <i className='fa-solid fa-floppy-disk'></i> Guardar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
